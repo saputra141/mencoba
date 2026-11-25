@@ -1,23 +1,12 @@
-export type EngineStatus = "idle" | "processing" | "completed" | "error";
-
-export interface PortingProject {
+export interface BridgeStatus {
   id: string;
   name: string;
-  progress: number;
-  status: EngineStatus;
-  lastUpdated: string;
+  status: 'active' | 'idle' | 'error';
+  load: number;
 }
 
-export interface BridgeConnection {
-  deviceId: string;
-  deviceName: string;
-  ipAddress: string;
-  status: "connected" | "disconnected" | "searching";
-  latency: number;
-}
-
-export interface PortingState {
-  projects: PortingProject[];
-  activeProjectId: string | null;
-  isEngineRunning: boolean;
+export interface EngineConfig {
+  threads: number;
+  bufferSize: number;
+  autoOptimize: boolean;
 }
