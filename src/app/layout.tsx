@@ -1,22 +1,34 @@
-import type { Metadata } from "next";
-import { Inter } from "next/font/google";
+import type { Metadata, Viewport } from "next";
 import "./globals.css";
 
-const inter = Inter({ subsets: ["latin"] });
-
 export const metadata: Metadata = {
-  title: "SwitchCore | Advanced Porting Engine",
-  description: "Next-generation porting tool for Switch ecosystem",
+  title: "Mencoba App",
+  description: "High-performance Mobile Porting Interface",
+  manifest: "/manifest.json",
+};
+
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  maximumScale: 1,
+  userScalable: false,
+  viewportFit: "cover",
+  themeColor: "#050506",
 };
 
 export default function RootLayout({
   children,
-}: Readonly<{
+}: {
   children: React.ReactNode;
-}>) {
+}) {
   return (
-    <html lang="en">
-      <body className={inter.className}>{children}</body>
+    <html lang="en" className="dark">
+      <body className="antialiased selection:bg-cyan-500/30">
+        <div className="fixed inset-0 bg-[radial-gradient(circle_at_50%_-20%,#1e1b4b,transparent)] pointer-events-none" />
+        <div className="relative z-10 flex flex-col min-h-screen">
+          {children}
+        </div>
+      </body>
     </html>
   );
 }

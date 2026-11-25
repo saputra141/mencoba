@@ -1,44 +1,33 @@
 "use client";
 
-import React from 'react';
-import { Cpu, Github, Activity, ShieldCheck } from 'lucide-react';
-import { motion } from 'framer-motion';
+import { motion } from "framer-motion";
+import { Menu, Bell, User } from "lucide-react";
 
-export const Header = () => {
+export default function Header() {
   return (
-    <header className="border-b border-white/10 bg-switch-dark/80 backdrop-blur-md sticky top-0 z-50">
-      <div className="container mx-auto px-6 h-16 flex items-center justify-between">
-        <motion.div 
-          initial={{ opacity: 0, x: -20 }}
-          animate={{ opacity: 1, x: 0 }}
-          className="flex items-center gap-3"
-        >
-          <div className="bg-switch-cyan/20 p-2 rounded-lg">
-            <Cpu className="w-6 h-6 text-switch-cyan" />
-          </div>
-          <div>
-            <h1 className="text-white font-bold tracking-tight text-lg leading-none">SWITCHCORE</h1>
-            <p className="text-white/40 text-[10px] font-mono mt-1 uppercase tracking-widest">Advanced Porting Engine</p>
-          </div>
-        </motion.div>
-
-        <nav className="hidden md:flex items-center gap-8">
-          <a href="#" className="text-sm font-medium text-white/60 hover:text-switch-cyan transition-colors">Dashboard</a>
-          <a href="#" className="text-sm font-medium text-white/60 hover:text-switch-cyan transition-colors">Porting Kit</a>
-          <a href="#" className="text-sm font-medium text-white/60 hover:text-switch-cyan transition-colors">Bridge</a>
-          <a href="#" className="text-sm font-medium text-white/60 hover:text-switch-cyan transition-colors">Settings</a>
-        </nav>
-
-        <div className="flex items-center gap-4">
-          <div className="flex items-center gap-2 bg-white/5 px-3 py-1.5 rounded-full border border-white/10">
-            <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse" />
-            <span className="text-[11px] font-mono text-white/70 uppercase">Engine Online</span>
-          </div>
-          <button className="text-white/60 hover:text-white transition-colors">
-            <Github className="w-5 h-5" />
-          </button>
+    <header className="flex justify-between items-center py-2">
+      <motion.div 
+        initial={{ opacity: 0, x: -20 }}
+        animate={{ opacity: 1, x: 0 }}
+        className="flex items-center gap-3"
+      >
+        <div className="w-10 h-10 rounded-2xl bg-gradient-to-br from-cyan-500 to-blue-600 flex items-center justify-center shadow-lg shadow-cyan-500/20">
+          <span className="font-black text-black text-xl">M</span>
         </div>
+        <div>
+          <p className="text-[10px] text-gray-500 font-bold uppercase tracking-tighter leading-none">Version 2.0.4</p>
+          <h2 className="font-bold text-sm">SAPUTRA</h2>
+        </div>
+      </motion.div>
+
+      <div className="flex gap-2">
+        <button className="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center border border-white/10 active:scale-90 transition-transform">
+          <Bell size={18} className="text-gray-400" />
+        </button>
+        <button className="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center border border-white/10 active:scale-90 transition-transform">
+          <Menu size={18} className="text-gray-400" />
+        </button>
       </div>
     </header>
   );
-};
+}
