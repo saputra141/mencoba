@@ -3,15 +3,10 @@ import { CapacitorConfig } from '@capacitor/cli';
 const config: CapacitorConfig = {
   appId: 'com.saputra.mencoba',
   appName: 'Mencoba App',
-  webDir: 'out', // Folder hasil 'next build'
+  webDir: 'out', // Harus match dengan output folder Next.js
   bundledWebRuntime: false,
   server: {
     androidScheme: 'https'
-  },
-  // UI Tweaks untuk Android
-  android: {
-    backgroundColor: "#050506",
-    allowMixedContent: true
   }
 };
 
