@@ -1,12 +1,19 @@
-export interface BridgeStatus {
-  id: string;
-  name: string;
-  status: 'active' | 'idle' | 'error';
-  load: number;
+export interface AppStatus {
+  engineActive: boolean;
+  bridgeConnected: boolean;
+  uptime: string;
+  version: string;
 }
 
-export interface EngineConfig {
-  threads: number;
-  bufferSize: number;
-  autoOptimize: boolean;
+export interface ActivityLog {
+  id: string;
+  action: string;
+  timestamp: Date;
+  status: 'success' | 'warning' | 'error';
+}
+
+export interface EngineStats {
+  cpuUsage: number;
+  memoryUsage: number;
+  latency: number;
 }

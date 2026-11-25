@@ -1,25 +1,21 @@
-import { useState, useEffect } from 'react';
+import { useState, useCallback } from 'react';
 
 export const usePortingEngine = () => {
+  const [isProcessing, setIsProcessing] = useState(false);
   const [progress, setProgress] = useState(0);
-  const [isRunning, setIsRunning] = useState(false);
 
-  useEffect(() => {
-    let interval: NodeJS.Timeout;
-    if (isRunning && progress < 100) {
-      interval = setInterval(() => {
-        setProgress(prev => Math.min(prev + 1, 100));
-      }, 50);
-    } else if (progress >= 100) {
-      setIsRunning(false);
-    }
-    return () => clearInterval(interval);
-  }, [isRunning, progress]);
-
-  const startPorting = () => {
+  const startPorting = useCallback(async () => {
+    setIsProcessing(true);
     setProgress(0);
-    setIsRunning(true);
-  };
+    
+    // Simulasi proses porting engine
+    for (let i = 0; i <= 100; i += 10) {
+      await new Promise(resolve => setTimeout(resolve, 400));
+      setProgress(i);
+    }
+    
+    setIsProcessing(false);
+  }, []);
 
-  return { progress, isRunning, startPorting };
+  return { isProcessing, progress, startPorting };
 };
