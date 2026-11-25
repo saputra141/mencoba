@@ -1,22 +1,23 @@
 /** @type {import('tailwindcss').Config} */
 module.exports = {
   content: [
-    "./src/pages/**/*.{js,ts,jsx,tsx,mdx}",
-    "./src/components/**/*.{js,ts,jsx,tsx,mdx}",
-    "./src/app/**/*.{js,ts,jsx,tsx,mdx}",
+    "./src/pages/**/*.{js,ts,tsx,jsx,mdx}",
+    "./src/components/**/*.{js,ts,tsx,jsx,mdx}",
+    "./src/app/**/*.{js,ts,tsx,jsx,mdx}",
   ],
   theme: {
     extend: {
       colors: {
-        switch: {
-          dark: "#050506",
-          card: "#0d0d0f",
-          cyan: "#00e5ff",
-          red: "#ff4554",
+        background: "hsl(var(--background))",
+        foreground: "hsl(var(--foreground))",
+        primary: {
+          DEFAULT: "hsl(var(--primary))",
+          glow: "var(--primary-glow)",
         },
       },
-      animation: {
-        'pulse-slow': 'pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+      fontFamily: {
+        sans: ['Inter', 'system-ui', 'sans-serif'],
+        mono: ['Fira Code', 'monospace'],
       },
     },
   },

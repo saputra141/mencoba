@@ -1,114 +1,219 @@
-"use client";
+'use client';
 
-import { motion, AnimatePresence } from "framer-motion";
+import React, { useState, useEffect, useRef } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 import { 
+  Rocket, 
+  Github, 
   Cpu, 
-  Smartphone, 
-  Zap, 
-  ShieldCheck, 
-  ChevronRight, 
-  Layers,
-  ArrowUpRight
-} from "lucide-react";
-import Header from "@/components/Header";
-import { useState } from "react";
+  Activity, 
+  Package, 
+  CheckCircle2, 
+  AlertCircle, 
+  Terminal,
+  ChevronRight,
+  Download,
+  Share2
+} from 'lucide-react';
+import { BuildStatus, PortingState } from '@/lib/types';
+import Header from '@/components/Header';
 
-export default function MobileDashboard() {
-  const [activeTab, setActiveTab] = useState('bridge');
+export default function ReleaseDashboard() {
+  const [state, setState] = useState<PortingState>({
+    progress: 0,
+    status: 'idle',
+    logs: [],
+    currentTask: 'Waiting for deployment signal...'
+  });
+
+  const scrollRef = useRef<HTMLDivElement>(null);
+
+  const addLog = (msg: string) => {
+    setState(prev => ({
+      ...prev,
+      logs: [...prev.logs.slice(-50), `[${new Date().toLocaleTimeString()}] ${msg}`]
+    }));
+  };
+
+  const startReleaseProcess = async () => {
+    setState(prev => ({ ...prev, status: 'analyzing', progress: 5 }));
+    addLog("Initializing build pipeline...");
+    
+    // Simulate Build Steps
+    const steps: { status: BuildStatus; msg: string; p: number }[] = [
+      { status: 'analyzing', msg: 'Analyzing repository structure...', p: 15 },
+      { status: 'compiling', msg: 'Compiling assets for ARM64 architecture...', p: 45 },
+      { status: 'signing', msg: 'Applying cryptographic signatures...', p: 75 },
+      { status: 'uploading', msg: 'Pushing build to GitHub Releases...', p: 90 },
+      { status: 'completed', msg: 'Release successfully published!', p: 100 },
+    ];
+
+    for (const step of steps) {
+      await new Promise(r => setTimeout(r, 1500));
+      setState(prev => ({ 
+        ...prev, 
+        status: step.status, 
+        progress: step.p,
+        currentTask: step.msg
+      }));
+      addLog(step.msg);
+    }
+  };
+
+  useEffect(() => {
+    if (scrollRef.current) {
+      scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
+    }
+  }, [state.logs]);
 
   return (
-    <main className="flex-1 flex flex-col p-4 md:p-8 max-w-4xl mx-auto w-full gap-6">
+    <main className="min-h-screen bg-[#050506] p-4 pb-24 md:p-8">
       <Header />
+      
+      <div className="mx-auto max-w-6xl space-y-6">
+        {/* Hero Section */}
+        <div className="flex flex-col gap-6 lg:flex-row">
+          <div className="flex-1 space-y-6">
+            <motion.div 
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="cyber-panel p-8"
+            >
+              <div className="scanline" />
+              <div className="relative z-10">
+                <div className="mb-4 flex items-center gap-2 text-cyan-400">
+                  <Cpu size={20} className="animate-pulse" />
+                  <span className="text-sm font-bold tracking-widest uppercase">System Ready</span>
+                </div>
+                <h1 className="mb-4 text-4xl font-black md:text-6xl">
+                  DEPLOY TO <br />
+                  <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-purple-500">RELEASES</span>
+                </h1>
+                <p className="mb-8 text-slate-400 max-w-md">
+                  Otomatisasi porting engine dan publikasi langsung ke GitHub Releases dengan enkripsi end-to-end.
+                </p>
 
-      {/* Hero Section - Mobile Optimized */}
-      <motion.div 
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        className="glass-card p-6 relative overflow-hidden"
-      >
-        <div className="absolute top-0 right-0 p-4 opacity-10">
-          <Cpu size={120} strokeWidth={1} />
-        </div>
-        
-        <div className="relative z-10">
-          <span className="text-cyan-400 text-xs font-bold tracking-[0.2em] uppercase mb-2 block">
-            System Status: Optimal
-          </span>
-          <h1 className="text-3xl font-black mb-2 bg-gradient-to-r from-white to-white/60 bg-clip-text text-transparent">
-            Mencoba Core
-          </h1>
-          <p className="text-gray-400 text-sm leading-relaxed max-w-xs">
-            High-speed architecture for seamless cross-platform bridging.
-          </p>
-        </div>
+                <button 
+                  onClick={startReleaseProcess}
+                  disabled={state.status !== 'idle' && state.status !== 'completed'}
+                  className="cyber-button w-full md:w-auto px-12"
+                >
+                  <Rocket size={20} />
+                  {state.status === 'idle' ? 'START NEW RELEASE' : 'RE-DEPLOY ENGINE'}
+                </button>
+              </div>
+            </motion.div>
 
-        <div className="mt-6 flex gap-3">
-          <button className="btn-primary flex items-center gap-2 text-sm">
-            Initialize <Zap size={16} fill="currentColor" />
-          </button>
-          <button className="px-5 py-3 rounded-2xl bg-white/5 border border-white/10 text-sm font-medium hover:bg-white/10 transition-colors">
-            Config
-          </button>
-        </div>
-      </motion.div>
+            {/* Stats Grid */}
+            <div className="grid grid-cols-2 gap-4">
+              {[
+                { label: 'Uptime', value: '99.9%', icon: Activity },
+                { label: 'Version', value: 'v2.4.0-prod', icon: Package }
+              ].map((stat, i) => (
+                <motion.div 
+                  key={i}
+                  initial={{ opacity: 0, x: -20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: i * 0.1 }}
+                  className="cyber-panel p-4 flex items-center gap-4"
+                >
+                  <div className="rounded-xl bg-white/5 p-3 text-cyan-400">
+                    <stat.icon size={20} />
+                  </div>
+                  <div>
+                    <p className="text-xs text-slate-500 uppercase tracking-tighter">{stat.label}</p>
+                    <p className="font-bold">{stat.value}</p>
+                  </div>
+                </motion.div>
+              ))}
+            </div>
+          </div>
 
-      {/* Grid Features */}
-      <div className="grid grid-cols-2 gap-4">
-        {[
-          { icon: Smartphone, label: "Porting", color: "text-blue-400", desc: "Native Bridge" },
-          { icon: ShieldCheck, label: "Secure", color: "text-emerald-400", desc: "AES-256" },
-          { icon: Layers, label: "Assets", color: "text-purple-400", desc: "Optimization" },
-          { icon: Zap, label: "Boost", color: "text-amber-400", desc: "Turbo Core" },
-        ].map((item, idx) => (
-          <motion.div
-            key={item.label}
-            initial={{ opacity: 0, scale: 0.9 }}
+          {/* Console / Terminal Section */}
+          <motion.div 
+            initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
-            transition={{ delay: idx * 0.1 }}
-            className="glass-card p-4 flex flex-col gap-3 active:bg-white/10 transition-colors cursor-pointer"
+            className="w-full lg:w-[400px] cyber-panel bg-black/40 border-cyan-500/20"
           >
-            <div className={`w-10 h-10 rounded-xl bg-white/5 flex items-center justify-center ${item.color}`}>
-              <item.icon size={20} />
-            </div>
-            <div>
-              <h3 className="font-bold text-sm">{item.label}</h3>
-              <p className="text-[10px] text-gray-500 uppercase tracking-wider">{item.desc}</p>
-            </div>
-          </motion.div>
-        ))}
-      </div>
-
-      {/* Activity Monitor */}
-      <div className="glass-card flex-1 p-5 flex flex-col gap-4">
-        <div className="flex justify-between items-center">
-          <h2 className="font-bold text-sm flex items-center gap-2">
-            <span className="w-2 h-2 rounded-full bg-cyan-500 animate-pulse" />
-            Live Processing
-          </h2>
-          <ArrowUpRight size={16} className="text-gray-500" />
-        </div>
-
-        <div className="space-y-3">
-          {[1, 2, 3].map((i) => (
-            <div key={i} className="flex items-center gap-4 p-3 rounded-xl bg-black/40 border border-white/5">
-              <div className="h-8 w-1 bg-cyan-500/50 rounded-full" />
-              <div className="flex-1">
-                <div className="flex justify-between text-[11px] mb-1">
-                  <span className="text-gray-400">Thread #00{i}</span>
-                  <span className="text-cyan-400">98%</span>
-                </div>
-                <div className="h-1.5 w-full bg-white/5 rounded-full overflow-hidden">
-                  <motion.div 
-                    initial={{ width: 0 }}
-                    animate={{ width: "98%" }}
-                    transition={{ duration: 1.5, delay: i * 0.2 }}
-                    className="h-full bg-cyan-500 shadow-[0_0_10px_#00e5ff]"
-                  />
-                </div>
+            <div className="flex items-center justify-between border-b border-white/10 p-4 bg-white/5">
+              <div className="flex items-center gap-2">
+                <Terminal size={16} className="text-cyan-400" />
+                <span className="text-xs font-mono font-bold uppercase tracking-widest">Core_Engine_Logs</span>
+              </div>
+              <div className="flex gap-1.5">
+                <div className="h-2 w-2 rounded-full bg-red-500/50" />
+                <div className="h-2 w-2 rounded-full bg-yellow-500/50" />
+                <div className="h-2 w-2 rounded-full bg-green-500/50" />
               </div>
             </div>
-          ))}
+            
+            <div 
+              ref={scrollRef}
+              className="h-[350px] overflow-y-auto p-4 font-mono text-[11px] leading-relaxed text-cyan-400/80 custom-scrollbar"
+            >
+              {state.logs.length === 0 && (
+                <div className="flex h-full items-center justify-center text-slate-600 italic">
+                  Systems idle. Awaiting instruction...
+                </div>
+              )}
+              {state.logs.map((log, i) => (
+                <div key={i} className="mb-1 border-l-2 border-cyan-500/20 pl-2">
+                  <span className="text-cyan-600">{'>'}</span> {log}
+                </div>
+              ))}
+            </div>
+            
+            {/* Progress Bar */}
+            <div className="border-t border-white/10 p-4 bg-black/40">
+              <div className="mb-2 flex justify-between text-[10px] font-bold uppercase tracking-widest">
+                <span>{state.currentTask}</span>
+                <span className="text-cyan-400">{state.progress}%</span>
+              </div>
+              <div className="h-2 w-full overflow-hidden rounded-full bg-white/5">
+                <motion.div 
+                  initial={{ width: 0 }}
+                  animate={{ width: `${state.progress}%` }}
+                  className="loading-gradient h-full bg-cyan-500"
+                />
+              </div>
+            </div>
+          </motion.div>
         </div>
+
+        {/* Release Result */}
+        <AnimatePresence>
+          {state.status === 'completed' && (
+            <motion.div
+              initial={{ opacity: 0, y: 30 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0 }}
+              className="cyber-panel border-green-500/30 bg-green-500/5 p-6"
+            >
+              <div className="flex flex-wrap items-center justify-between gap-6">
+                <div className="flex items-center gap-4">
+                  <div className="rounded-2xl bg-green-500/20 p-4 text-green-400 shadow-[0_0_20px_rgba(34,197,94,0.2)]">
+                    <CheckCircle2 size={32} />
+                  </div>
+                  <div>
+                    <h3 className="text-xl font-bold">Build Successful</h3>
+                    <p className="text-sm text-slate-400">Release v1.0.4 is now live on GitHub Production.</p>
+                  </div>
+                </div>
+                
+                <div className="flex gap-3">
+                  <button className="flex items-center gap-2 rounded-xl bg-white/5 px-6 py-3 font-bold hover:bg-white/10 transition-colors">
+                    <Github size={18} />
+                    View on GitHub
+                  </button>
+                  <button className="flex items-center gap-2 rounded-xl bg-cyan-500 px-6 py-3 font-bold text-black hover:shadow-[0_0_20px_rgba(0,229,255,0.4)] transition-all">
+                    <Download size={18} />
+                    Get Assets
+                  </button>
+                </div>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
       </div>
     </main>
   );

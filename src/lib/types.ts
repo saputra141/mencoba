@@ -1,22 +1,22 @@
-export type ProcessStatus = 'idle' | 'processing' | 'completed' | 'error';
+export type BuildStatus = 'idle' | 'analyzing' | 'compiling' | 'signing' | 'uploading' | 'completed' | 'failed';
+
+export interface ReleaseAsset {
+  id: string;
+  name: string;
+  size: string;
+  type: 'apk' | 'nro' | 'zip' | 'bin';
+  status: 'pending' | 'ready';
+}
 
 export interface PortingState {
   progress: number;
-  status: ProcessStatus;
-  currentTask: string;
+  status: BuildStatus;
   logs: string[];
+  currentTask: string;
 }
 
-export interface BridgeState {
-  isConnected: boolean;
-  activeTransfer: boolean;
-  transferRate: string;
-  deviceName: string;
-}
-
-export interface DeviceInfo {
-  id: string;
-  name: string;
-  type: 'switch' | 'pc' | 'mobile';
-  status: 'online' | 'offline';
+export interface BuildResult {
+  version: string;
+  changelog: string;
+  assets: ReleaseAsset[];
 }
