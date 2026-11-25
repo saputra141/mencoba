@@ -6,12 +6,17 @@ module.exports = {
   theme: {
     extend: {
       colors: {
-        switch: {
-          red: "#ff4554",
-          blue: "#00c3e3",
-          gray: "#323232",
-          dark: "#121212",
-        }
+        dark: {
+          900: '#050506',
+          800: '#0d0d0f',
+          700: '#1a1a1e',
+        },
+        android: '#00e5ff',
+        switch: '#ff4554',
+      },
+      fontFamily: {
+        mono: ['JetBrains Mono', 'monospace'],
+        sans: ['Inter', 'sans-serif'],
       },
     },
   },

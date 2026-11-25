@@ -3,16 +3,48 @@
 @tailwind utilities;
 
 :root {
-  --foreground-rgb: 255, 255, 255;
-  --background-start-rgb: 18, 18, 18;
-  --background-end-rgb: 0, 0, 0;
+  --bg-dark: #050506;
+  --card-bg: #0d0d0f;
+  --accent-primary: #00e5ff; /* Android Cyan */
+  --accent-secondary: #ff4554; /* Switch Red */
+  --border-color: rgba(255, 255, 255, 0.08);
+  --text-dim: #94a3b8;
 }
 
-body {
-  background: rgb(var(--background-start-rgb));
-  overflow-x: hidden;
+@layer base {
+  body {
+    @apply bg-[#050506] text-white antialiased selection:bg-cyan-500/30;
+    font-feature-settings: "cv02", "cv03", "cv04", "ss01";
+  }
 }
 
-.switch-card-gradient {
-  background: linear-gradient(135deg, rgba(255,69,84,0.1) 0%, rgba(0,195,227,0.1) 100%);
+.glass-panel {
+  @apply bg-[#0d0d0f]/80 backdrop-blur-xl border border-white/5;
+}
+
+.terminal-scrollbar::-webkit-scrollbar {
+  width: 6px;
+}
+
+.terminal-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.terminal-scrollbar::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 10px;
+}
+
+@keyframes scanline {
+  0% { transform: translateY(-100%); }
+  100% { transform: translateY(100%); }
+}
+
+.scanline::after {
+  content: "";
+  position: absolute;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: linear-gradient(to bottom, transparent, rgba(0, 229, 255, 0.05), transparent);
+  animation: scanline 8s linear infinite;
+  pointer-events: none;
 }

@@ -1,16 +1,30 @@
-export interface SwitchGame {
+export type ProjectEngine = 'Unity' | 'Unreal' | 'Godot' | 'CustomC++' | 'Cocos';
+export type BuildStatus = 'idle' | 'analyzing' | 'porting' | 'compiling' | 'success' | 'failed';
+
+export interface ProjectMetadata {
   id: string;
-  title: string;
-  imageUrl: string;
-  status: 'Online' | 'Offline' | 'Away';
-  playTime: string;
-  lastPlayed: string;
+  name: string;
+  engine: ProjectEngine;
+  sourcePath: string;
+  lastModified: Date;
+  size: string;
+  platformSource: 'Nintendo Switch' | 'Multi-platform';
 }
 
-export interface GameNotification {
+export interface AnalysisReport {
+  compatibilityScore: number; // 0-100
+  components: {
+    name: string;
+    status: 'compatible' | 'modification_required' | 'replacement_required' | 'unsupported';
+    description: string;
+    category: 'Graphics' | 'Input' | 'Audio' | 'Storage' | 'Core';
+  }[];
+}
+
+export interface BuildLog {
   id: string;
-  gameTitle: string;
+  timestamp: string;
+  level: 'info' | 'warn' | 'error' | 'success';
   message: string;
-  timestamp: Date;
-  type: 'achievement' | 'status' | 'friend';
+  module: 'NDK' | 'Gradle' | 'AI_Agent' | 'Assets';
 }
