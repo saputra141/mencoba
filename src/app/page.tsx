@@ -1,164 +1,130 @@
-'use client';
+"use client";
 
 import React from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion } from 'framer-motion';
 import { 
-  Zap, 
+  Smartphone, 
   Cpu, 
-  RefreshCw, 
-  Network, 
-  ChevronRight,
-  Database,
-  Radio
+  Zap, 
+  Activity, 
+  ShieldCheck, 
+  Layers,
+  Terminal
 } from 'lucide-react';
-import { Header } from '@/components/Header';
-import { Navigation } from '@/components/Navigation';
-import { usePortingEngine } from '@/hooks/usePortingEngine';
-import { useSwitchBridge } from '@/hooks/useSwitchBridge';
+import { useNativeBridge } from '@/hooks/useNativeBridge';
+import { cn } from '@/lib/utils';
 
-export default function Home() {
-  const { isProcessing, progress, startPorting } = usePortingEngine();
-  const { isConnected, toggleBridge } = useSwitchBridge();
+export default function Dashboard() {
+  const { info, isNative, triggerHaptic, platform } = useNativeBridge();
 
-  const containerVariants = {
-    hidden: { opacity: 0 },
-    show: {
-      opacity: 1,
-      transition: { staggerChildren: 0.1 }
+  const cards = [
+    { 
+      title: "Platform", 
+      value: platform.toUpperCase(), 
+      icon: <Smartphone className="w-5 h-5 text-blue-400" />,
+      desc: "Current running environment"
+    },
+    { 
+      title: "Engine", 
+      value: isNative ? "Capacitor Native" : "Web Browser", 
+      icon: <Cpu className="w-5 h-5 text-purple-400" />,
+      desc: "Runtime bridge status"
+    },
+    { 
+      title: "System", 
+      value: info?.model || "Generic Device", 
+      icon: <Activity className="w-5 h-5 text-green-400" />,
+      desc: info?.operatingSystem || "Standard OS"
     }
-  };
-
-  const itemVariants = {
-    hidden: { opacity: 0, y: 20 },
-    show: { opacity: 1, y: 0 }
-  };
+  ];
 
   return (
-    <main className="min-h-screen pb-32 pt-24 px-6 overflow-x-hidden">
-      <Header />
-      
-      <div className="max-w-2xl mx-auto space-y-8">
-        {/* Welcome Section */}
-        <section>
-          <motion.h2 
-            initial={{ opacity: 0, x: -20 }}
-            animate={{ opacity: 1, x: 0 }}
-            className="text-3xl font-bold tracking-tight"
+    <main className="min-h-screen bg-[#0a0a0c] text-white p-6 font-sans">
+      {/* Header Section */}
+      <header className="mb-10 flex justify-between items-start">
+        <div>
+          <motion.h1 
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-emerald-400"
           >
-            Welcome Back, <span className="text-blue-500">Saputra</span>
-          </motion.h2>
-          <p className="text-gray-400 mt-1">System status is optimal. All bridges operational.</p>
-        </section>
+            Native Dashboard
+          </motion.h1>
+          <p className="text-gray-500 mt-1 flex items-center gap-2">
+            <ShieldCheck className="w-4 h-4" /> CLI-Driven Development Ready
+          </p>
+        </div>
+        <div className={cn(
+          "px-3 py-1 rounded-full text-xs font-mono border",
+          isNative ? "border-emerald-500/50 text-emerald-400 bg-emerald-500/10" : "border-amber-500/50 text-amber-400 bg-amber-500/10"
+        )}>
+          {isNative ? "● NATIVE_MODE" : "○ WEB_MODE"}
+        </div>
+      </header>
 
-        {/* Stats Grid */}
-        <motion.div 
-          variants={containerVariants}
-          initial="hidden"
-          animate="show"
-          className="grid grid-cols-2 gap-4"
-        >
-          <motion.div variants={itemVariants} className="glass-card p-4 space-y-3">
-            <div className="flex items-center gap-2 text-blue-400">
-              <Cpu size={18} />
-              <span className="text-xs font-semibold uppercase tracking-wider">Engine</span>
+      {/* Grid Stats */}
+      <section className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
+        {cards.map((card, idx) => (
+          <motion.div
+            key={idx}
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ delay: idx * 0.1 }}
+            className="bg-[#16161a] border border-white/5 p-5 rounded-2xl hover:border-white/10 transition-colors"
+          >
+            <div className="flex items-center gap-3 mb-3">
+              <div className="p-2 bg-white/5 rounded-lg">{card.icon}</div>
+              <span className="text-sm font-medium text-gray-400">{card.title}</span>
             </div>
-            <div>
-              <div className="text-2xl font-bold tracking-tighter">98.2%</div>
-              <p className="text-[10px] text-gray-500 font-mono">STABILITY CORE</p>
-            </div>
+            <div className="text-xl font-semibold mb-1">{card.value}</div>
+            <div className="text-xs text-gray-600 uppercase tracking-wider">{card.desc}</div>
           </motion.div>
+        ))}
+      </section>
 
-          <motion.div variants={itemVariants} className="glass-card p-4 space-y-3">
-            <div className="flex items-center gap-2 text-emerald-400">
-              <Network size={18} />
-              <span className="text-xs font-semibold uppercase tracking-wider">Bridge</span>
-            </div>
-            <div>
-              <div className="text-2xl font-bold tracking-tighter">12ms</div>
-              <p className="text-[10px] text-gray-500 font-mono">NETWORK LATENCY</p>
-            </div>
-          </motion.div>
-        </motion.div>
-
-        {/* Main Actions */}
-        <section className="space-y-4">
-          <h3 className="text-sm font-semibold text-gray-400 uppercase tracking-widest px-1">Control Panel</h3>
+      {/* Action Center */}
+      <section className="bg-[#16161a] border border-white/5 rounded-3xl p-8 mb-8 relative overflow-hidden">
+        <div className="relative z-10">
+          <h2 className="text-xl font-semibold mb-6 flex items-center gap-2">
+            <Zap className="w-5 h-5 text-amber-400" /> Interaction Bridge
+          </h2>
           
-          <motion.div 
-            whileHover={{ scale: 1.01 }}
-            whileTap={{ scale: 0.98 }}
-            className="glass-card p-6 flex items-center justify-between group cursor-pointer overflow-hidden relative"
-            onClick={startPorting}
-          >
-            {isProcessing && (
-              <motion.div 
-                className="absolute inset-0 bg-blue-600/10 origin-left"
-                style={{ width: `${progress}%` }}
-              />
-            )}
+          <div className="flex flex-wrap gap-4">
+            <button
+              onClick={triggerHaptic}
+              className="px-6 py-3 bg-white text-black rounded-xl font-bold hover:bg-gray-200 transition-all active:scale-95 flex items-center gap-2"
+            >
+              <Layers className="w-4 h-4" /> Trigger Haptics
+            </button>
             
-            <div className="flex items-center gap-4 relative z-10">
-              <div className={`p-3 rounded-xl ${isProcessing ? 'bg-blue-600 animate-spin' : 'bg-blue-600/20 text-blue-400'}`}>
-                <RefreshCw size={24} />
-              </div>
-              <div>
-                <h4 className="font-bold">{isProcessing ? 'Processing...' : 'Porting Engine'}</h4>
-                <p className="text-xs text-gray-400">{isProcessing ? `Optimizing core ${progress}%` : 'Synchronize system protocols'}</p>
-              </div>
-            </div>
-            <ChevronRight className="text-gray-600 group-hover:text-white group-hover:translate-x-1 transition-all" />
-          </motion.div>
-
-          <motion.div 
-            whileHover={{ scale: 1.01 }}
-            whileTap={{ scale: 0.98 }}
-            className="glass-card p-6 flex items-center justify-between group cursor-pointer"
-            onClick={toggleBridge}
-          >
-            <div className="flex items-center gap-4">
-              <div className={`p-3 rounded-xl transition-colors duration-500 ${isConnected ? 'bg-emerald-500 text-white shadow-[0_0_20px_rgba(16,185,129,0.4)]' : 'bg-emerald-500/20 text-emerald-400'}`}>
-                <Zap size={24} />
-              </div>
-              <div>
-                <h4 className="font-bold">Switch Bridge</h4>
-                <p className="text-xs text-gray-400">{isConnected ? 'Active Tunneling' : 'Connection Standby'}</p>
-              </div>
-            </div>
-            <div className={`px-3 py-1 rounded-full text-[10px] font-bold ${isConnected ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30' : 'bg-white/5 text-gray-500 border border-white/10'}`}>
-              {isConnected ? 'ON' : 'OFF'}
-            </div>
-          </motion.div>
-        </section>
-
-        {/* Activity Feed */}
-        <section className="space-y-4">
-          <h3 className="text-sm font-semibold text-gray-400 uppercase tracking-widest px-1">Recent Activity</h3>
-          <div className="space-y-3">
-            {[
-              { label: 'System Kernel Updated', time: '2m ago', icon: Database, color: 'text-purple-400' },
-              { label: 'Bridge Link Established', time: '14m ago', icon: Radio, color: 'text-orange-400' },
-            ].map((activity, i) => (
-              <motion.div 
-                key={i}
-                initial={{ opacity: 0, x: 20 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ delay: 0.5 + (i * 0.1) }}
-                className="flex items-center justify-between p-4 bg-white/2 rounded-2xl border border-white/5"
-              >
-                <div className="flex items-center gap-3">
-                  <div className={`p-2 rounded-lg bg-white/5 ${activity.color}`}>
-                    <activity.icon size={16} />
-                  </div>
-                  <span className="text-sm font-medium">{activity.label}</span>
-                </div>
-                <span className="text-xs text-gray-500">{activity.time}</span>
-              </motion.div>
-            ))}
+            <button
+              onClick={() => alert(`SDK Version: ${info?.osVersion || 'N/A'}`)}
+              className="px-6 py-3 bg-white/5 border border-white/10 text-white rounded-xl font-bold hover:bg-white/10 transition-all flex items-center gap-2"
+            >
+              <Terminal className="w-4 h-4" /> System Info
+            </button>
           </div>
-        </section>
-      </div>
+        </div>
+        
+        {/* Decorative Background Blur */}
+        <div className="absolute -right-20 -top-20 w-64 h-64 bg-blue-600/10 rounded-full blur-[100px]" />
+        <div className="absolute -left-20 -bottom-20 w-64 h-64 bg-emerald-600/10 rounded-full blur-[100px]" />
+      </section>
 
-      <Navigation />
+      {/* Terminal View (Simulated) */}
+      <footer className="mt-auto">
+        <div className="bg-black/40 border border-white/5 rounded-xl p-4 font-mono text-xs text-gray-500">
+          <div className="flex items-center gap-2 mb-2">
+            <div className="w-2 h-2 rounded-full bg-red-500" />
+            <div className="w-2 h-2 rounded-full bg-amber-500" />
+            <div className="w-2 h-2 rounded-full bg-emerald-500" />
+            <span className="ml-2 text-[10px] text-gray-600 uppercase tracking-widest">Debug Console</span>
+          </div>
+          <p>{`> npx cap sync android`}</p>
+          <p className="text-emerald-500">{`> build successful: ${new Date().toLocaleTimeString()}`}</p>
+          <p>{`> watching for native bridges...`}</p>
+        </div>
+      </footer>
     </main>
   );
 }

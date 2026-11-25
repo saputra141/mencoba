@@ -1,19 +1,24 @@
 {
   "name": "mencoba-app",
-  "version": "0.1.0",
+  "version": "1.0.0",
   "private": true,
   "scripts": {
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "static-build": "next build && npx cap copy",
-    "android-open": "npx cap open android"
+    "static": "next build",
+    "cap:sync": "npm run static && npx cap sync",
+    "android:build": "npm run static && npx cap sync android && cd android && ./gradlew assembleDebug",
+    "android:run": "npm run static && npx cap sync android && npx cap run android",
+    "android:clean": "cd android && ./gradlew clean"
   },
   "dependencies": {
     "@capacitor/android": "^6.0.0",
     "@capacitor/core": "^6.0.0",
-    "@capacitor/ios": "^6.0.0",
+    "@capacitor/device": "^6.0.0",
+    "@capacitor/haptics": "^6.0.0",
+    "@capacitor/status-bar": "^6.0.0",
     "next": "14.2.3",
     "react": "^18",
     "react-dom": "^18",
