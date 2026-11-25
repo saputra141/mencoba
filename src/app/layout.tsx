@@ -5,20 +5,18 @@ import "./globals.css";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "SwitchNotify | Nintendo Switch Notification Bridge",
-  description: "Monitor and receive notifications for your Nintendo Switch activity",
+  title: "SwitchCore | Advanced Porting Engine",
+  description: "Next-generation porting tool for Switch ecosystem",
 };
 
 export default function RootLayout({
   children,
-}: {
+}: Readonly<{
   children: React.ReactNode;
-}) {
+}>) {
   return (
     <html lang="en">
-      <body className={`${inter.className} bg-switch-dark text-white min-h-screen`}>
-        {children}
-      </body>
+      <body className={inter.className}>{children}</body>
     </html>
   );
 }

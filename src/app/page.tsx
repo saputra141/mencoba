@@ -1,226 +1,225 @@
 "use client";
+
 import React from 'react';
-import { Header } from '@/components/Header';
-import { useSwitchBridge } from '@/hooks/useSwitchBridge';
-import { usePortingEngine } from '@/hooks/usePortingEngine';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
-  Cpu, 
+  Play, 
+  Terminal, 
+  Zap, 
+  Layers, 
+  RefreshCw, 
   Wifi, 
-  Battery, 
-  Gamepad2, 
-  Terminal as TerminalIcon, 
-  Zap,
-  Activity,
-  AlertCircle
+  Database,
+  ArrowRightLeft,
+  ChevronRight
 } from 'lucide-react';
-import { clsx, type ClassValue } from 'clsx';
+import { Header } from '@/components/Header';
+import { usePortingEngine } from '@/hooks/usePortingEngine';
+import { useSwitchBridge } from '@/hooks/useSwitchBridge';
+import { clsx } from 'clsx';
 import { twMerge } from 'tailwind-merge';
 
-function cn(...inputs: ClassValue[]) {
+function cn(...inputs: any[]) {
   return twMerge(clsx(inputs));
 }
 
 export default function Dashboard() {
-  const { status, logs, connect, disconnect } = useSwitchBridge();
-  const { state, progress, startStreaming, stopStreaming } = usePortingEngine();
+  const { state, startPorting, reset } = usePortingEngine();
+  const { bridge, toggleConnection } = useSwitchBridge();
 
   return (
-    <main className="min-h-screen bg-switch-dark text-white selection:bg-switch-cyan/30">
-      <div className="scanline fixed inset-0 pointer-events-none z-50" />
+    <main className="min-h-screen bg-switch-dark text-white font-sans selection:bg-switch-cyan/30">
       <Header />
-
-      <div className="max-w-7xl mx-auto p-6 grid grid-cols-1 lg:grid-cols-12 gap-6">
+      
+      <div className="container mx-auto px-6 py-10 grid grid-cols-1 lg:grid-cols-12 gap-8">
         
-        {/* Left Column: Device Status */}
-        <div className="lg:col-span-4 space-y-6">
-          <section className="glass-panel p-6 rounded-2xl relative overflow-hidden">
-            <div className="flex justify-between items-start mb-8">
-              <div>
-                <h2 className="text-sm font-mono text-white/40 uppercase tracking-widest">Core Status</h2>
-                <p className="text-2xl font-bold mt-1">Console Bridge</p>
+        {/* Left Column: Porting Control */}
+        <div className="lg:col-span-7 space-y-6">
+          <motion.div 
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="bg-switch-card border border-white/10 rounded-2xl p-8 relative overflow-hidden group"
+          >
+            <div className="absolute top-0 right-0 p-8 opacity-5">
+              <Layers size={160} />
+            </div>
+
+            <div className="relative z-10">
+              <div className="flex items-start justify-between mb-8">
+                <div>
+                  <h2 className="text-2xl font-bold mb-2">Engine Controller</h2>
+                  <p className="text-white/50 text-sm">Convert and optimize assets for target hardware architecture.</p>
+                </div>
+                <div className="flex gap-2">
+                  <button 
+                    onClick={() => startPorting("Project_Alpha_v1.0")}
+                    disabled={state.status === 'processing'}
+                    className="flex items-center gap-2 bg-switch-cyan text-black px-6 py-2.5 rounded-xl font-bold hover:brightness-110 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
+                  >
+                    {state.status === 'processing' ? <RefreshCw className="w-4 h-4 animate-spin" /> : <Play className="w-4 h-4 fill-current" />}
+                    {state.status === 'processing' ? 'PORTING...' : 'START ENGINE'}
+                  </button>
+                </div>
               </div>
-              <div className={cn(
-                "px-3 py-1 rounded-full text-[10px] font-bold border",
-                status.isConnected ? "bg-green-500/10 border-green-500 text-green-500" : "bg-red-500/10 border-red-500 text-red-500"
-              )}>
-                {status.isConnected ? "CONNECTED" : "DISCONNECTED"}
+
+              {/* Progress UI */}
+              <div className="space-y-4 mb-8">
+                <div className="flex justify-between items-end">
+                  <span className="text-sm font-mono text-switch-cyan uppercase tracking-wider">{state.currentTask}</span>
+                  <span className="text-2xl font-mono font-bold italic">{state.progress}%</span>
+                </div>
+                <div className="h-3 w-full bg-white/5 rounded-full overflow-hidden border border-white/5">
+                  <motion.div 
+                    initial={{ width: 0 }}
+                    animate={{ width: `${state.progress}%` }}
+                    className="h-full bg-gradient-to-r from-switch-cyan to-blue-500 shadow-[0_0_20px_rgba(0,229,255,0.4)]"
+                  />
+                </div>
               </div>
+
+              {/* Terminal Output */}
+              <div className="bg-black/40 rounded-xl p-4 border border-white/5 font-mono text-[12px] h-48 overflow-y-auto custom-scrollbar">
+                <div className="flex items-center gap-2 text-white/30 mb-2 border-b border-white/5 pb-2">
+                  <Terminal size={14} />
+                  <span>PROCESS_LOGS_SYSTEM_v4.0</span>
+                </div>
+                <AnimatePresence initial={false}>
+                  {state.logs.length === 0 && <div className="text-white/20 italic">Waiting for process initialization...</div>}
+                  {state.logs.map((log, i) => (
+                    <motion.div 
+                      key={i}
+                      initial={{ opacity: 0, x: -10 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      className={cn(
+                        "py-0.5",
+                        log.startsWith('Error') ? "text-switch-red" : "text-white/70"
+                      )}
+                    >
+                      <span className="text-white/20 mr-2">[{new Date().toLocaleTimeString([], {hour12: false})}]</span>
+                      {log}
+                    </motion.div>
+                  ))}
+                </AnimatePresence>
+              </div>
+            </div>
+          </motion.div>
+        </div>
+
+        {/* Right Column: Status & Bridge */}
+        <div className="lg:col-span-5 space-y-6">
+          
+          {/* Connection Status */}
+          <motion.div 
+            initial={{ opacity: 0, x: 20 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ delay: 0.1 }}
+            className="bg-switch-card border border-white/10 rounded-2xl p-6"
+          >
+            <div className="flex items-center justify-between mb-6">
+              <div className="flex items-center gap-3">
+                <div className={cn(
+                  "p-2 rounded-lg transition-colors",
+                  bridge.isConnected ? "bg-switch-cyan/20 text-switch-cyan" : "bg-white/5 text-white/40"
+                )}>
+                  <Wifi size={20} />
+                </div>
+                <h3 className="font-bold">Switch Bridge</h3>
+              </div>
+              <button 
+                onClick={toggleConnection}
+                className={cn(
+                  "px-4 py-1.5 rounded-lg text-xs font-bold transition-all border",
+                  bridge.isConnected 
+                    ? "bg-switch-red/10 border-switch-red/20 text-switch-red hover:bg-switch-red/20" 
+                    : "bg-white/5 border-white/10 text-white hover:bg-white/10"
+                )}
+              >
+                {bridge.isConnected ? 'DISCONNECT' : 'CONNECT'}
+              </button>
             </div>
 
             <div className="space-y-4">
-              <StatusItem 
-                icon={<Cpu size={18} />} 
-                label="Device" 
-                value={status.deviceName || "None Detected"} 
-                color="cyan" 
-              />
-              <StatusItem 
-                icon={<Battery size={18} />} 
-                label="Power" 
-                value={status.isConnected ? `${status.batteryLevel}%` : "---"} 
-                color="red" 
-              />
-              <StatusItem 
-                icon={<Wifi size={18} />} 
-                label="Address" 
-                value={status.ipAddress || "0.0.0.0"} 
-                color="cyan" 
-              />
-              <StatusItem 
-                icon={<Zap size={18} />} 
-                label="Latency" 
-                value={status.isConnected ? `${status.latency}ms` : "---"} 
-                color="red" 
-              />
-            </div>
-
-            <div className="mt-8 pt-6 border-t border-white/5">
-              {!status.isConnected ? (
-                <button 
-                  onClick={connect}
-                  className="w-full bg-switch-cyan text-black font-bold py-3 rounded-xl hover:bg-cyan-400 transition-all flex items-center justify-center gap-2 shadow-[0_0_20px_rgba(0,229,255,0.3)]"
-                >
-                  <Activity size={18} /> INITIALIZE BRIDGE
-                </button>
-              ) : (
-                <button 
-                  onClick={disconnect}
-                  className="w-full bg-white/5 text-white font-bold py-3 rounded-xl hover:bg-white/10 transition-all flex items-center justify-center gap-2 border border-white/10"
-                >
-                  TERMINATE CONNECTION
-                </button>
-              )}
-            </div>
-          </section>
-
-          <section className="glass-panel p-6 rounded-2xl">
-            <h2 className="text-sm font-mono text-white/40 mb-4 uppercase tracking-widest">Active Process</h2>
-            <div className="flex items-center gap-4 p-4 bg-white/5 rounded-xl border border-white/5">
-              <div className="w-12 h-12 bg-switch-red/20 rounded-lg flex items-center justify-center text-switch-red">
-                <Gamepad2 size={24} />
+              <div className="flex justify-between items-center p-3 rounded-xl bg-white/5 border border-white/5">
+                <span className="text-sm text-white/50">Device Name</span>
+                <span className="text-sm font-medium">{bridge.deviceName}</span>
               </div>
-              <div className="flex-1 min-w-0">
-                <p className="text-xs text-white/40 font-mono truncate uppercase">Now Playing</p>
-                <p className="font-bold truncate text-sm">
-                  {status.activeGame || "No Active Content"}
-                </p>
+              <div className="flex justify-between items-center p-3 rounded-xl bg-white/5 border border-white/5">
+                <span className="text-sm text-white/50">Transfer Rate</span>
+                <span className={cn(
+                  "text-sm font-mono font-bold",
+                  bridge.activeTransfer ? "text-switch-cyan" : "text-white/30"
+                )}>
+                  {bridge.transferRate}
+                </span>
               </div>
             </div>
-          </section>
-        </div>
 
-        {/* Right Column: Logs & Engine */}
-        <div className="lg:col-span-8 space-y-6">
-          <section className="glass-panel rounded-2xl flex flex-col h-[500px]">
-            <div className="p-4 border-b border-white/5 flex items-center justify-between">
-              <div className="flex items-center gap-2">
-                <TerminalIcon size={16} className="text-switch-cyan" />
-                <span className="text-xs font-mono font-bold uppercase tracking-tighter">System Data Stream</span>
-              </div>
-              <div className="flex gap-1">
-                <div className="w-2 h-2 rounded-full bg-white/10" />
-                <div className="w-2 h-2 rounded-full bg-white/10" />
-                <div className="w-2 h-2 rounded-full bg-white/10" />
-              </div>
-            </div>
-            
-            <div className="flex-1 overflow-y-auto p-4 font-mono text-sm terminal-scrollbar space-y-2">
-              <AnimatePresence initial={false}>
-                {logs.length === 0 && (
-                  <div className="h-full flex items-center justify-center text-white/20 italic">
-                    Waiting for data stream...
-                  </div>
-                )}
-                {logs.map((log) => (
-                  <motion.div
-                    key={log.id}
-                    initial={{ opacity: 0, x: -10 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    className="flex gap-3"
-                  >
-                    <span className="text-white/20 whitespace-nowrap">[{log.timestamp}]</span>
-                    <span className={cn(
-                      "font-bold px-1 rounded text-[10px]",
-                      log.source === 'SWITCH' ? "text-switch-red bg-switch-red/10" : 
-                      log.source === 'BRIDGE' ? "text-switch-cyan bg-switch-cyan/10" : "text-white/40 bg-white/5"
-                    )}>
-                      {log.source}
-                    </span>
-                    <span className={cn(
-                      log.level === 'error' ? "text-red-500" :
-                      log.level === 'success' ? "text-green-400" :
-                      log.level === 'warn' ? "text-yellow-500" : "text-white/70"
-                    )}>
-                      {log.message}
-                    </span>
-                  </motion.div>
-                ))}
-              </AnimatePresence>
-            </div>
-          </section>
-
-          <section className="glass-panel p-6 rounded-2xl relative overflow-hidden">
-             <div className="flex items-center justify-between mb-6">
-                <div className="flex items-center gap-3">
-                  <div className="p-2 bg-switch-cyan/10 rounded-lg text-switch-cyan">
-                    <Activity size={20} />
-                  </div>
-                  <div>
-                    <h3 className="font-bold">Notification Relay</h3>
-                    <p className="text-xs text-white/40 font-mono uppercase tracking-widest">Engine Status: {state}</p>
-                  </div>
+            {bridge.activeTransfer && (
+              <motion.div 
+                initial={{ opacity: 0, height: 0 }}
+                animate={{ opacity: 1, height: 'auto' }}
+                className="mt-4 pt-4 border-t border-white/5"
+              >
+                <div className="flex items-center gap-3 text-switch-cyan animate-pulse">
+                  <RefreshCw size={14} className="animate-spin" />
+                  <span className="text-[11px] font-bold uppercase tracking-tighter">Synchronizing file clusters...</span>
                 </div>
-                {state === 'idle' ? (
-                  <button 
-                    onClick={startStreaming}
-                    className="px-6 py-2 bg-white text-black font-bold text-xs rounded-lg hover:bg-switch-cyan transition-colors"
-                  >
-                    START ENGINE
-                  </button>
-                ) : (
-                  <button 
-                    onClick={stopStreaming}
-                    className="px-6 py-2 bg-red-500/10 text-red-500 border border-red-500/20 font-bold text-xs rounded-lg hover:bg-red-500/20"
-                  >
-                    STOP RELAY
-                  </button>
-                )}
-             </div>
+              </motion.div>
+            )}
+          </motion.div>
 
-             <div className="relative h-2 bg-white/5 rounded-full overflow-hidden">
-                <motion.div 
-                  className="absolute top-0 left-0 h-full bg-switch-cyan shadow-[0_0_10px_#00e5ff]"
-                  initial={{ width: 0 }}
-                  animate={{ width: `${progress}%` }}
-                />
+          {/* Quick Actions */}
+          <div className="grid grid-cols-2 gap-4">
+            <QuickActionCard 
+              icon={<Database size={20} />} 
+              title="Asset Manager" 
+              desc="View local files"
+              delay={0.2}
+            />
+            <QuickActionCard 
+              icon={<ArrowRightLeft size={20} />} 
+              title="File Bridge" 
+              desc="P2P Transfer"
+              delay={0.3}
+            />
+          </div>
+          
+          {/* Stats */}
+          <div className="bg-gradient-to-br from-indigo-900/20 to-purple-900/20 border border-white/10 rounded-2xl p-6 relative overflow-hidden">
+             <div className="absolute top-0 right-0 p-4">
+                <Zap className="text-yellow-500/20" size={48} />
              </div>
-             
-             <div className="mt-4 flex justify-between text-[10px] font-mono text-white/30 uppercase">
-                <span>Relay Latency: {status.isConnected ? '0.4ms' : '---'}</span>
-                <span>Buffer: {Math.floor(progress)}%</span>
-                <span>Encrypted: AES-256</span>
+             <h4 className="text-xs font-bold text-white/40 uppercase tracking-widest mb-4">Engine Performance</h4>
+             <div className="flex items-end gap-2">
+                <span className="text-4xl font-bold tracking-tighter">12.4</span>
+                <span className="text-lg text-white/40 mb-1">GFLOPS</span>
              </div>
-          </section>
+             <div className="mt-4 flex gap-1">
+                {[40, 70, 45, 90, 65, 80, 35, 60, 50, 75].map((h, i) => (
+                  <div key={i} className="flex-1 bg-white/10 rounded-t-sm h-8 relative">
+                    <div className="absolute bottom-0 left-0 right-0 bg-switch-cyan/40 rounded-t-sm" style={{ height: `${h}%` }} />
+                  </div>
+                ))}
+             </div>
+          </div>
+
         </div>
       </div>
     </main>
   );
 }
 
-function StatusItem({ icon, label, value, color }: { icon: React.ReactNode, label: string, value: string, color: 'cyan' | 'red' }) {
+function QuickActionCard({ icon, title, desc, delay }: { icon: React.ReactNode, title: string, desc: string, delay: number }) {
   return (
-    <div className="flex items-center justify-between group">
-      <div className="flex items-center gap-3 text-white/60">
-        <div className={cn(
-          "transition-colors",
-          color === 'cyan' ? "group-hover:text-switch-cyan" : "group-hover:text-switch-red"
-        )}>
-          {icon}
-        </div>
-        <span className="text-xs font-mono uppercase tracking-wider">{label}</span>
-      </div>
-      <span className="font-mono text-sm font-bold">{value}</span>
-    </div>
+    <motion.button
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ delay }}
+      className="bg-switch-card border border-white/10 p-5 rounded-2xl text-left hover:border-switch-cyan/50 hover:bg-white/5 transition-all group"
+    >
+      <div className="mb-4 text-white/40 group-hover:text-switch-cyan transition-colors">{icon}</div>
+      <h4 className="font-bold text-sm mb-1">{title}</h4>
+      <p className="text-[11px] text-white/40">{desc}</p>
+    </motion.button>
   );
 }

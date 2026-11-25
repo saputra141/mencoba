@@ -1,40 +1,41 @@
 "use client";
+
 import React from 'react';
-import { Share2, Settings, ShieldCheck, Activity } from 'lucide-react';
+import { Cpu, Github, Activity, ShieldCheck } from 'lucide-react';
 import { motion } from 'framer-motion';
 
 export const Header = () => {
   return (
-    <header className="border-b border-white/5 bg-switch-dark/50 backdrop-blur-md sticky top-0 z-50">
-      <div className="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
-        <div className="flex items-center gap-3">
-          <div className="flex -space-x-2">
-            <div className="w-3 h-8 bg-switch-red rounded-l-sm" />
-            <div className="w-3 h-8 bg-switch-cyan rounded-r-sm" />
+    <header className="border-b border-white/10 bg-switch-dark/80 backdrop-blur-md sticky top-0 z-50">
+      <div className="container mx-auto px-6 h-16 flex items-center justify-between">
+        <motion.div 
+          initial={{ opacity: 0, x: -20 }}
+          animate={{ opacity: 1, x: 0 }}
+          className="flex items-center gap-3"
+        >
+          <div className="bg-switch-cyan/20 p-2 rounded-lg">
+            <Cpu className="w-6 h-6 text-switch-cyan" />
           </div>
-          <h1 className="text-xl font-bold tracking-tighter">
-            SWITCH<span className="text-switch-cyan">NOTIFY</span>
-            <span className="text-xs ml-2 text-white/40 font-mono">v1.0.0-PROD</span>
-          </h1>
-        </div>
+          <div>
+            <h1 className="text-white font-bold tracking-tight text-lg leading-none">SWITCHCORE</h1>
+            <p className="text-white/40 text-[10px] font-mono mt-1 uppercase tracking-widest">Advanced Porting Engine</p>
+          </div>
+        </motion.div>
 
-        <div className="hidden md:flex items-center gap-6 text-sm font-medium text-white/60">
-          <a href="#" className="hover:text-switch-cyan transition-colors flex items-center gap-2">
-            <Activity size={16} /> Monitoring
-          </a>
-          <a href="#" className="hover:text-switch-cyan transition-colors flex items-center gap-2">
-            <ShieldCheck size={16} /> Security
-          </a>
-          <a href="#" className="hover:text-switch-cyan transition-colors flex items-center gap-2">
-            <Settings size={16} /> Config
-          </a>
-        </div>
+        <nav className="hidden md:flex items-center gap-8">
+          <a href="#" className="text-sm font-medium text-white/60 hover:text-switch-cyan transition-colors">Dashboard</a>
+          <a href="#" className="text-sm font-medium text-white/60 hover:text-switch-cyan transition-colors">Porting Kit</a>
+          <a href="#" className="text-sm font-medium text-white/60 hover:text-switch-cyan transition-colors">Bridge</a>
+          <a href="#" className="text-sm font-medium text-white/60 hover:text-switch-cyan transition-colors">Settings</a>
+        </nav>
 
         <div className="flex items-center gap-4">
-          <div className="h-2 w-2 rounded-full bg-green-500 animate-pulse" />
-          <span className="text-xs font-mono text-green-500">ENGINE_ONLINE</span>
-          <button className="p-2 hover:bg-white/5 rounded-full transition-colors">
-            <Share2 size={18} />
+          <div className="flex items-center gap-2 bg-white/5 px-3 py-1.5 rounded-full border border-white/10">
+            <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse" />
+            <span className="text-[11px] font-mono text-white/70 uppercase">Engine Online</span>
+          </div>
+          <button className="text-white/60 hover:text-white transition-colors">
+            <Github className="w-5 h-5" />
           </button>
         </div>
       </div>

@@ -1,18 +1,22 @@
-export interface LogEntry {
-  id: string;
-  timestamp: string;
-  level: 'info' | 'warn' | 'error' | 'success';
-  message: string;
-  source: 'SYSTEM' | 'SWITCH' | 'BRIDGE';
+export type ProcessStatus = 'idle' | 'processing' | 'completed' | 'error';
+
+export interface PortingState {
+  progress: number;
+  status: ProcessStatus;
+  currentTask: string;
+  logs: string[];
 }
 
-export interface BridgeStatus {
+export interface BridgeState {
   isConnected: boolean;
-  deviceName: string | null;
-  batteryLevel: number;
-  ipAddress: string | null;
-  latency: number;
-  activeGame: string | null;
+  activeTransfer: boolean;
+  transferRate: string;
+  deviceName: string;
 }
 
-export type PortingState = 'idle' | 'scanning' | 'connecting' | 'streaming' | 'error';
+export interface DeviceInfo {
+  id: string;
+  name: string;
+  type: 'switch' | 'pc' | 'mobile';
+  status: 'online' | 'offline';
+}

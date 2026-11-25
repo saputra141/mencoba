@@ -3,48 +3,48 @@
 @tailwind utilities;
 
 :root {
-  --bg-dark: #050506;
-  --card-bg: #0d0d0f;
-  --accent-primary: #00e5ff; /* Android Cyan */
-  --accent-secondary: #ff4554; /* Switch Red */
-  --border-color: rgba(255, 255, 255, 0.08);
-  --text-dim: #94a3b8;
+  --background: #050506;
+  --foreground: #ffffff;
 }
 
-@layer base {
-  body {
-    @apply bg-[#050506] text-white antialiased selection:bg-cyan-500/30;
-    font-feature-settings: "cv02", "cv03", "cv04", "ss01";
+body {
+  color: var(--foreground);
+  background: var(--background);
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  overflow-x: hidden;
+}
+
+@layer utilities {
+  .custom-scrollbar::-webkit-scrollbar {
+    width: 4px;
+  }
+  .custom-scrollbar::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  .custom-scrollbar::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 10px;
+  }
+  .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+    background: rgba(0, 229, 255, 0.3);
   }
 }
 
-.glass-panel {
-  @apply bg-[#0d0d0f]/80 backdrop-blur-xl border border-white/5;
+/* Glassmorphism effects */
+.glass {
+  background: rgba(255, 255, 255, 0.03);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.05);
 }
 
-.terminal-scrollbar::-webkit-scrollbar {
-  width: 6px;
+/* Animations */
+@keyframes scan {
+  from { transform: translateY(-100%); }
+  to { transform: translateY(100%); }
 }
 
-.terminal-scrollbar::-webkit-scrollbar-track {
-  background: transparent;
-}
-
-.terminal-scrollbar::-webkit-scrollbar-thumb {
-  background: rgba(255, 255, 255, 0.1);
-  border-radius: 10px;
-}
-
-@keyframes scanline {
-  0% { transform: translateY(-100%); }
-  100% { transform: translateY(100%); }
-}
-
-.scanline::after {
-  content: "";
-  position: absolute;
-  top: 0; left: 0; right: 0; bottom: 0;
-  background: linear-gradient(to bottom, transparent, rgba(0, 229, 255, 0.05), transparent);
-  animation: scanline 8s linear infinite;
-  pointer-events: none;
+.scanning-line {
+  height: 2px;
+  background: linear-gradient(90deg, transparent, #00e5ff, transparent);
+  animation: scan 2s linear infinite;
 }
