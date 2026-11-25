@@ -1,16 +1,11 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  output: 'export', // Wajib untuk Capacitor agar menghasilkan folder /out
+  // Wajib untuk Capacitor: Menghasilkan folder 'out' statis
+  output: 'export',
+  // Menonaktifkan optimasi gambar karena tidak didukung di output statis tanpa server
   images: {
-    unoptimized: true, // Wajib untuk static export
+    unoptimized: true,
   },
-  // Mencegah error linting saat build di CI jika ada typo kecil
-  eslint: {
-    ignoreDuringBuilds: true,
-  },
-  typescript: {
-    ignoreBuildErrors: true,
-  }
 };
 
 export default nextConfig;

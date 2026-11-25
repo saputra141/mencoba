@@ -1,16 +1,12 @@
 import { CapacitorConfig } from '@capacitor/cli';
 
 const config: CapacitorConfig = {
-  appId: 'com.saputra.mencoba',
-  appName: 'Mencoba App',
-  webDir: 'out',
+  appId: 'com.mencoba.app',
+  appName: 'mencoba-app',
+  webDir: 'out', // Pastikan ini 'out' sesuai dengan output Next.js
+  bundledWebRuntime: false,
   server: {
-    androidScheme: 'https',
-    cleartext: true
-  },
-  // Menghapus bundledWebRuntime karena sudah deprecated
-  android: {
-    allowMixedContent: true
+    androidScheme: 'https'
   }
 };
 
