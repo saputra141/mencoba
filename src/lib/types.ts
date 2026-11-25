@@ -1,30 +1,30 @@
-export type ProjectEngine = 'Unity' | 'Unreal' | 'Godot' | 'CustomC++' | 'Cocos';
-export type BuildStatus = 'idle' | 'analyzing' | 'porting' | 'compiling' | 'success' | 'failed';
-
-export interface ProjectMetadata {
-  id: string;
-  name: string;
-  engine: ProjectEngine;
-  sourcePath: string;
-  lastModified: Date;
-  size: string;
-  platformSource: 'Nintendo Switch' | 'Multi-platform';
-}
-
-export interface AnalysisReport {
-  compatibilityScore: number; // 0-100
-  components: {
-    name: string;
-    status: 'compatible' | 'modification_required' | 'replacement_required' | 'unsupported';
-    description: string;
-    category: 'Graphics' | 'Input' | 'Audio' | 'Storage' | 'Core';
-  }[];
-}
-
-export interface BuildLog {
+export interface LogEntry {
   id: string;
   timestamp: string;
   level: 'info' | 'warn' | 'error' | 'success';
   message: string;
-  module: 'NDK' | 'Gradle' | 'AI_Agent' | 'Assets';
+  source: string;
+}
+
+export interface SystemStats {
+  cpuUsage: number;
+  temperature: number;
+  batteryLevel: number;
+  memoryUsed: number;
+  isDocked: boolean;
+}
+
+export interface BridgeStatus {
+  isConnected: boolean;
+  activePort: number;
+  uptime: string;
+  latency: number;
+}
+
+export interface NotificationItem {
+  id: string;
+  title: string;
+  app: string;
+  time: string;
+  type: 'game' | 'system' | 'friend';
 }
