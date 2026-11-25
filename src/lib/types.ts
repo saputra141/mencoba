@@ -3,28 +3,16 @@ export interface LogEntry {
   timestamp: string;
   level: 'info' | 'warn' | 'error' | 'success';
   message: string;
-  source: string;
-}
-
-export interface SystemStats {
-  cpuUsage: number;
-  temperature: number;
-  batteryLevel: number;
-  memoryUsed: number;
-  isDocked: boolean;
+  source: 'SYSTEM' | 'SWITCH' | 'BRIDGE';
 }
 
 export interface BridgeStatus {
   isConnected: boolean;
-  activePort: number;
-  uptime: string;
+  deviceName: string | null;
+  batteryLevel: number;
+  ipAddress: string | null;
   latency: number;
+  activeGame: string | null;
 }
 
-export interface NotificationItem {
-  id: string;
-  title: string;
-  app: string;
-  time: string;
-  type: 'game' | 'system' | 'friend';
-}
+export type PortingState = 'idle' | 'scanning' | 'connecting' | 'streaming' | 'error';

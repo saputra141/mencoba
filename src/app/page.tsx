@@ -1,109 +1,122 @@
-'use client';
-
+"use client";
 import React from 'react';
-import { motion } from 'framer-motion';
-import { 
-  Activity, 
-  Terminal, 
-  Battery, 
-  Thermometer, 
-  Layers, 
-  Zap,
-  Gamepad2,
-  Clock
-} from 'lucide-react';
 import { Header } from '@/components/Header';
 import { useSwitchBridge } from '@/hooks/useSwitchBridge';
 import { usePortingEngine } from '@/hooks/usePortingEngine';
-import { clsx } from 'clsx';
+import { motion, AnimatePresence } from 'framer-motion';
+import { 
+  Cpu, 
+  Wifi, 
+  Battery, 
+  Gamepad2, 
+  Terminal as TerminalIcon, 
+  Zap,
+  Activity,
+  AlertCircle
+} from 'lucide-react';
+import { clsx, type ClassValue } from 'clsx';
 import { twMerge } from 'tailwind-merge';
 
-function cn(...inputs: any[]) {
+function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
 
 export default function Dashboard() {
-  const { status, logs, addLog } = useSwitchBridge();
-  const { stats } = usePortingEngine();
+  const { status, logs, connect, disconnect } = useSwitchBridge();
+  const { state, progress, startStreaming, stopStreaming } = usePortingEngine();
 
   return (
     <main className="min-h-screen bg-switch-dark text-white selection:bg-switch-cyan/30">
-      <Header isConnected={status.isConnected} />
-      
-      <div className="p-6 max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-6">
+      <div className="scanline fixed inset-0 pointer-events-none z-50" />
+      <Header />
+
+      <div className="max-w-7xl mx-auto p-6 grid grid-cols-1 lg:grid-cols-12 gap-6">
         
-        {/* Left Column: Stats & Status */}
+        {/* Left Column: Device Status */}
         <div className="lg:col-span-4 space-y-6">
-          {/* Status Card */}
-          <div className="glass-panel p-5 rounded-xl space-y-4 relative overflow-hidden group">
-            <div className="flex justify-between items-start">
+          <section className="glass-panel p-6 rounded-2xl relative overflow-hidden">
+            <div className="flex justify-between items-start mb-8">
               <div>
-                <p className="text-zinc-500 text-xs font-mono uppercase tracking-tighter">System Health</p>
-                <h2 className="text-xl font-bold italic">CONNECTED</h2>
+                <h2 className="text-sm font-mono text-white/40 uppercase tracking-widest">Core Status</h2>
+                <p className="text-2xl font-bold mt-1">Console Bridge</p>
               </div>
-              <Activity className="text-switch-cyan w-5 h-5" />
-            </div>
-            
-            <div className="grid grid-cols-2 gap-4 pt-2">
-              <div className="bg-white/5 p-3 rounded-lg border border-white/5">
-                <div className="flex items-center gap-2 mb-1">
-                  <Thermometer className="w-3 h-3 text-orange-500" />
-                  <span className="text-[10px] text-zinc-400 uppercase">Temp</span>
-                </div>
-                <p className="text-lg font-mono">{stats.temperature}°C</p>
-              </div>
-              <div className="bg-white/5 p-3 rounded-lg border border-white/5">
-                <div className="flex items-center gap-2 mb-1">
-                  <Battery className="w-3 h-3 text-green-500" />
-                  <span className="text-[10px] text-zinc-400 uppercase">Battery</span>
-                </div>
-                <p className="text-lg font-mono">{stats.batteryLevel}%</p>
+              <div className={cn(
+                "px-3 py-1 rounded-full text-[10px] font-bold border",
+                status.isConnected ? "bg-green-500/10 border-green-500 text-green-500" : "bg-red-500/10 border-red-500 text-red-500"
+              )}>
+                {status.isConnected ? "CONNECTED" : "DISCONNECTED"}
               </div>
             </div>
 
-            <div className="space-y-2">
-              <div className="flex justify-between text-[10px] uppercase font-mono text-zinc-500">
-                <span>CPU Load</span>
-                <span>{stats.cpuUsage}%</span>
-              </div>
-              <div className="h-1 bg-white/10 rounded-full overflow-hidden">
-                <motion.div 
-                  initial={{ width: 0 }}
-                  animate={{ width: `${stats.cpuUsage}%` }}
-                  className="h-full bg-switch-cyan shadow-[0_0_10px_rgba(0,229,255,0.5)]"
-                />
-              </div>
+            <div className="space-y-4">
+              <StatusItem 
+                icon={<Cpu size={18} />} 
+                label="Device" 
+                value={status.deviceName || "None Detected"} 
+                color="cyan" 
+              />
+              <StatusItem 
+                icon={<Battery size={18} />} 
+                label="Power" 
+                value={status.isConnected ? `${status.batteryLevel}%` : "---"} 
+                color="red" 
+              />
+              <StatusItem 
+                icon={<Wifi size={18} />} 
+                label="Address" 
+                value={status.ipAddress || "0.0.0.0"} 
+                color="cyan" 
+              />
+              <StatusItem 
+                icon={<Zap size={18} />} 
+                label="Latency" 
+                value={status.isConnected ? `${status.latency}ms` : "---"} 
+                color="red" 
+              />
             </div>
-          </div>
 
-          {/* Connection Details */}
-          <div className="glass-panel p-5 rounded-xl space-y-4">
-            <h3 className="text-xs font-mono uppercase text-zinc-500 flex items-center gap-2">
-              <Zap className="w-3 h-3" /> Connection Details
-            </h3>
-            <div className="space-y-3">
-              {[
-                { label: 'Latency', value: `${status.latency}ms`, color: 'text-green-500' },
-                { label: 'Active Port', value: status.activePort, color: 'text-switch-cyan' },
-                { label: 'Uptime', value: '04:12:09', color: 'text-white' },
-                { label: 'Protocol', value: 'UDP/SwitchLink', color: 'text-white' }
-              ].map((item, i) => (
-                <div key={i} className="flex justify-between items-center border-b border-white/5 pb-2">
-                  <span className="text-xs text-zinc-400 font-mono">{item.label}</span>
-                  <span className={cn("text-xs font-mono font-bold", item.color)}>{item.value}</span>
-                </div>
-              ))}
+            <div className="mt-8 pt-6 border-t border-white/5">
+              {!status.isConnected ? (
+                <button 
+                  onClick={connect}
+                  className="w-full bg-switch-cyan text-black font-bold py-3 rounded-xl hover:bg-cyan-400 transition-all flex items-center justify-center gap-2 shadow-[0_0_20px_rgba(0,229,255,0.3)]"
+                >
+                  <Activity size={18} /> INITIALIZE BRIDGE
+                </button>
+              ) : (
+                <button 
+                  onClick={disconnect}
+                  className="w-full bg-white/5 text-white font-bold py-3 rounded-xl hover:bg-white/10 transition-all flex items-center justify-center gap-2 border border-white/10"
+                >
+                  TERMINATE CONNECTION
+                </button>
+              )}
             </div>
-          </div>
+          </section>
+
+          <section className="glass-panel p-6 rounded-2xl">
+            <h2 className="text-sm font-mono text-white/40 mb-4 uppercase tracking-widest">Active Process</h2>
+            <div className="flex items-center gap-4 p-4 bg-white/5 rounded-xl border border-white/5">
+              <div className="w-12 h-12 bg-switch-red/20 rounded-lg flex items-center justify-center text-switch-red">
+                <Gamepad2 size={24} />
+              </div>
+              <div className="flex-1 min-w-0">
+                <p className="text-xs text-white/40 font-mono truncate uppercase">Now Playing</p>
+                <p className="font-bold truncate text-sm">
+                  {status.activeGame || "No Active Content"}
+                </p>
+              </div>
+            </div>
+          </section>
         </div>
 
-        {/* Center Column: Live Logs */}
-        <div className="lg:col-span-8 flex flex-col h-[calc(100vh-160px)]">
-          <div className="glass-panel flex-1 rounded-xl flex flex-col overflow-hidden border-switch-cyan/20">
-            <div className="bg-white/5 px-4 py-2 border-b border-white/5 flex justify-between items-center">
+        {/* Right Column: Logs & Engine */}
+        <div className="lg:col-span-8 space-y-6">
+          <section className="glass-panel rounded-2xl flex flex-col h-[500px]">
+            <div className="p-4 border-b border-white/5 flex items-center justify-between">
               <div className="flex items-center gap-2">
-                <Terminal className="w-4 h-4 text-switch-cyan" />
-                <span className="text-[10px] font-mono uppercase tracking-widest">Live Bridge Output</span>
+                <TerminalIcon size={16} className="text-switch-cyan" />
+                <span className="text-xs font-mono font-bold uppercase tracking-tighter">System Data Stream</span>
               </div>
               <div className="flex gap-1">
                 <div className="w-2 h-2 rounded-full bg-white/10" />
@@ -112,56 +125,102 @@ export default function Dashboard() {
               </div>
             </div>
             
-            <div className="flex-1 overflow-y-auto p-4 font-mono text-[11px] terminal-scrollbar scanline relative">
-              {logs.map((log) => (
-                <motion.div 
-                  initial={{ opacity: 0, x: -10 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  key={log.id} 
-                  className="mb-1 flex gap-3"
-                >
-                  <span className="text-zinc-600">[{log.timestamp}]</span>
-                  <span className={cn(
-                    "font-bold min-w-[60px]",
-                    log.level === 'success' && "text-green-500",
-                    log.level === 'info' && "text-switch-cyan",
-                    log.level === 'warn' && "text-yellow-500",
-                    log.level === 'error' && "text-switch-red"
-                  )}>
-                    {log.level.toUpperCase()}
-                  </span>
-                  <span className="text-zinc-300">{log.message}</span>
-                </motion.div>
-              ))}
-              {logs.length === 0 && (
-                <div className="h-full flex items-center justify-center text-zinc-500 animate-pulse italic">
-                  Waiting for data packets...
-                </div>
-              )}
+            <div className="flex-1 overflow-y-auto p-4 font-mono text-sm terminal-scrollbar space-y-2">
+              <AnimatePresence initial={false}>
+                {logs.length === 0 && (
+                  <div className="h-full flex items-center justify-center text-white/20 italic">
+                    Waiting for data stream...
+                  </div>
+                )}
+                {logs.map((log) => (
+                  <motion.div
+                    key={log.id}
+                    initial={{ opacity: 0, x: -10 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    className="flex gap-3"
+                  >
+                    <span className="text-white/20 whitespace-nowrap">[{log.timestamp}]</span>
+                    <span className={cn(
+                      "font-bold px-1 rounded text-[10px]",
+                      log.source === 'SWITCH' ? "text-switch-red bg-switch-red/10" : 
+                      log.source === 'BRIDGE' ? "text-switch-cyan bg-switch-cyan/10" : "text-white/40 bg-white/5"
+                    )}>
+                      {log.source}
+                    </span>
+                    <span className={cn(
+                      log.level === 'error' ? "text-red-500" :
+                      log.level === 'success' ? "text-green-400" :
+                      log.level === 'warn' ? "text-yellow-500" : "text-white/70"
+                    )}>
+                      {log.message}
+                    </span>
+                  </motion.div>
+                ))}
+              </AnimatePresence>
             </div>
-          </div>
+          </section>
 
-          {/* Quick Actions Footer */}
-          <div className="mt-6 flex gap-4">
-            <button 
-              onClick={() => addLog('Manual sync triggered by operator', 'warn', 'USER')}
-              className="flex-1 bg-white/5 hover:bg-white/10 border border-white/10 py-3 rounded-lg flex items-center justify-center gap-2 transition-all active:scale-95"
-            >
-              <Layers className="w-4 h-4 text-switch-cyan" />
-              <span className="text-xs font-bold uppercase tracking-wider">Sync Database</span>
-            </button>
-            <button className="flex-1 bg-switch-red/10 hover:bg-switch-red/20 border border-switch-red/20 py-3 rounded-lg flex items-center justify-center gap-2 transition-all active:scale-95 group">
-              <Gamepad2 className="w-4 h-4 text-switch-red group-hover:animate-bounce" />
-              <span className="text-xs font-bold uppercase tracking-wider">Launch Manager</span>
-            </button>
-          </div>
+          <section className="glass-panel p-6 rounded-2xl relative overflow-hidden">
+             <div className="flex items-center justify-between mb-6">
+                <div className="flex items-center gap-3">
+                  <div className="p-2 bg-switch-cyan/10 rounded-lg text-switch-cyan">
+                    <Activity size={20} />
+                  </div>
+                  <div>
+                    <h3 className="font-bold">Notification Relay</h3>
+                    <p className="text-xs text-white/40 font-mono uppercase tracking-widest">Engine Status: {state}</p>
+                  </div>
+                </div>
+                {state === 'idle' ? (
+                  <button 
+                    onClick={startStreaming}
+                    className="px-6 py-2 bg-white text-black font-bold text-xs rounded-lg hover:bg-switch-cyan transition-colors"
+                  >
+                    START ENGINE
+                  </button>
+                ) : (
+                  <button 
+                    onClick={stopStreaming}
+                    className="px-6 py-2 bg-red-500/10 text-red-500 border border-red-500/20 font-bold text-xs rounded-lg hover:bg-red-500/20"
+                  >
+                    STOP RELAY
+                  </button>
+                )}
+             </div>
+
+             <div className="relative h-2 bg-white/5 rounded-full overflow-hidden">
+                <motion.div 
+                  className="absolute top-0 left-0 h-full bg-switch-cyan shadow-[0_0_10px_#00e5ff]"
+                  initial={{ width: 0 }}
+                  animate={{ width: `${progress}%` }}
+                />
+             </div>
+             
+             <div className="mt-4 flex justify-between text-[10px] font-mono text-white/30 uppercase">
+                <span>Relay Latency: {status.isConnected ? '0.4ms' : '---'}</span>
+                <span>Buffer: {Math.floor(progress)}%</span>
+                <span>Encrypted: AES-256</span>
+             </div>
+          </section>
         </div>
       </div>
-
-      {/* Decorative BG element */}
-      <div className="fixed bottom-0 right-0 p-8 pointer-events-none opacity-20">
-        <Clock className="w-64 h-64 text-switch-cyan/10 rotate-12" />
-      </div>
     </main>
+  );
+}
+
+function StatusItem({ icon, label, value, color }: { icon: React.ReactNode, label: string, value: string, color: 'cyan' | 'red' }) {
+  return (
+    <div className="flex items-center justify-between group">
+      <div className="flex items-center gap-3 text-white/60">
+        <div className={cn(
+          "transition-colors",
+          color === 'cyan' ? "group-hover:text-switch-cyan" : "group-hover:text-switch-red"
+        )}>
+          {icon}
+        </div>
+        <span className="text-xs font-mono uppercase tracking-wider">{label}</span>
+      </div>
+      <span className="font-mono text-sm font-bold">{value}</span>
+    </div>
   );
 }

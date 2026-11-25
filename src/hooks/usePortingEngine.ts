@@ -1,28 +1,30 @@
-import { useState, useEffect } from 'react';
-import { SystemStats } from '../lib/types';
+import { useState } from 'react';
+import { PortingState } from '@/lib/types';
 
 export const usePortingEngine = () => {
-  const [stats, setStats] = useState<SystemStats>({
-    cpuUsage: 0,
-    temperature: 0,
-    batteryLevel: 0,
-    memoryUsed: 0,
-    isDocked: true
-  });
+  const [state, setState] = useState<PortingState>('idle');
+  const [progress, setProgress] = useState(0);
 
-  useEffect(() => {
+  const startStreaming = () => {
+    setState('scanning');
+    setProgress(0);
+    
+    let currentProgress = 0;
     const interval = setInterval(() => {
-      setStats({
-        cpuUsage: Math.floor(Math.random() * 40) + 20,
-        temperature: Math.floor(Math.random() * 15) + 35,
-        batteryLevel: 85,
-        memoryUsed: 1.4,
-        isDocked: true
-      });
-    }, 2000);
+      currentProgress += Math.random() * 15;
+      if (currentProgress >= 100) {
+        currentProgress = 100;
+        setState('streaming');
+        clearInterval(interval);
+      }
+      setProgress(currentProgress);
+    }, 400);
+  };
 
-    return () => clearInterval(interval);
-  }, []);
+  const stopStreaming = () => {
+    setState('idle');
+    setProgress(0);
+  };
 
-  return { stats };
+  return { state, progress, startStreaming, stopStreaming };
 };

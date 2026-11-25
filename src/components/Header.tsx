@@ -1,47 +1,42 @@
-'use client';
-
+"use client";
 import React from 'react';
-import { Cpu, Wifi, Bell, Shield } from 'lucide-react';
+import { Share2, Settings, ShieldCheck, Activity } from 'lucide-react';
 import { motion } from 'framer-motion';
 
-export const Header = ({ isConnected }: { isConnected: boolean }) => {
+export const Header = () => {
   return (
-    <header className="h-16 border-b border-white/5 bg-switch-dark/50 backdrop-blur-md sticky top-0 z-50 px-6 flex items-center justify-between">
-      <div className="flex items-center gap-3">
-        <div className="w-8 h-8 bg-switch-red rounded-sm flex items-center justify-center transform -skew-x-12">
-          <Shield className="text-white w-5 h-5 skew-x-12" />
-        </div>
-        <div>
-          <h1 className="text-lg font-bold tracking-tight">SWITCH<span className="text-switch-cyan">NOTIFY</span></h1>
-          <p className="text-[10px] text-zinc-500 font-mono leading-none tracking-widest">BRIDGE ENGINE V1.0.4</p>
-        </div>
-      </div>
-
-      <div className="flex items-center gap-6">
-        <div className="hidden md:flex items-center gap-4 text-xs font-mono">
-          <div className="flex items-center gap-2">
-            <Cpu className="w-3 h-3 text-switch-cyan" />
-            <span className="text-zinc-400">ENGINE:</span>
-            <span className="text-green-500">ACTIVE</span>
+    <header className="border-b border-white/5 bg-switch-dark/50 backdrop-blur-md sticky top-0 z-50">
+      <div className="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
+        <div className="flex items-center gap-3">
+          <div className="flex -space-x-2">
+            <div className="w-3 h-8 bg-switch-red rounded-l-sm" />
+            <div className="w-3 h-8 bg-switch-cyan rounded-r-sm" />
           </div>
-          <div className="flex items-center gap-2">
-            <Wifi className="w-3 h-3 text-switch-cyan" />
-            <span className="text-zinc-400">SIGNAL:</span>
-            <span className="text-white">-42dBm</span>
-          </div>
+          <h1 className="text-xl font-bold tracking-tighter">
+            SWITCH<span className="text-switch-cyan">NOTIFY</span>
+            <span className="text-xs ml-2 text-white/40 font-mono">v1.0.0-PROD</span>
+          </h1>
         </div>
 
-        <div className="flex items-center gap-2 px-3 py-1 rounded-full bg-white/5 border border-white/10">
-          <div className={`w-2 h-2 rounded-full ${isConnected ? 'bg-green-500 shadow-[0_0_8px_rgba(34,197,94,0.6)]' : 'bg-red-500'} animate-pulse`} />
-          <span className="text-[10px] font-bold uppercase tracking-wider">
-            {isConnected ? 'Link Established' : 'Searching...'}
-          </span>
+        <div className="hidden md:flex items-center gap-6 text-sm font-medium text-white/60">
+          <a href="#" className="hover:text-switch-cyan transition-colors flex items-center gap-2">
+            <Activity size={16} /> Monitoring
+          </a>
+          <a href="#" className="hover:text-switch-cyan transition-colors flex items-center gap-2">
+            <ShieldCheck size={16} /> Security
+          </a>
+          <a href="#" className="hover:text-switch-cyan transition-colors flex items-center gap-2">
+            <Settings size={16} /> Config
+          </a>
         </div>
-        
-        <button className="relative p-2 text-zinc-400 hover:text-white transition-colors">
-          <Bell className="w-5 h-5" />
-          <span className="absolute top-1 right-1 w-2 h-2 bg-switch-red rounded-full" />
-        </button>
+
+        <div className="flex items-center gap-4">
+          <div className="h-2 w-2 rounded-full bg-green-500 animate-pulse" />
+          <span className="text-xs font-mono text-green-500">ENGINE_ONLINE</span>
+          <button className="p-2 hover:bg-white/5 rounded-full transition-colors">
+            <Share2 size={18} />
+          </button>
+        </div>
       </div>
     </header>
   );

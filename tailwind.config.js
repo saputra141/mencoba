@@ -8,15 +8,17 @@ module.exports = {
   theme: {
     extend: {
       colors: {
-        'switch-dark': '#050506',
-        'switch-card': '#0d0d0f',
-        'switch-cyan': '#00e5ff',
-        'switch-red': '#ff4554',
+        switch: {
+          dark: "#050506",
+          card: "#0d0d0f",
+          cyan: "#00e5ff",
+          red: "#ff4554",
+        },
       },
       animation: {
-        'pulse-slow': 'pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+        'pulse-slow': 'pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite',
       },
     },
   },
   plugins: [],
-}
+};
