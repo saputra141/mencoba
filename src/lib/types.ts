@@ -1,22 +1,23 @@
-export type BuildStatus = 'idle' | 'analyzing' | 'compiling' | 'signing' | 'uploading' | 'completed' | 'failed';
+export type EngineStatus = "idle" | "processing" | "completed" | "error";
 
-export interface ReleaseAsset {
+export interface PortingProject {
   id: string;
   name: string;
-  size: string;
-  type: 'apk' | 'nro' | 'zip' | 'bin';
-  status: 'pending' | 'ready';
+  progress: number;
+  status: EngineStatus;
+  lastUpdated: string;
+}
+
+export interface BridgeConnection {
+  deviceId: string;
+  deviceName: string;
+  ipAddress: string;
+  status: "connected" | "disconnected" | "searching";
+  latency: number;
 }
 
 export interface PortingState {
-  progress: number;
-  status: BuildStatus;
-  logs: string[];
-  currentTask: string;
-}
-
-export interface BuildResult {
-  version: string;
-  changelog: string;
-  assets: ReleaseAsset[];
+  projects: PortingProject[];
+  activeProjectId: string | null;
+  isEngineRunning: boolean;
 }

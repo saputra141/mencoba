@@ -1,35 +1,37 @@
-import { useState, useEffect } from 'react';
-import { BridgeState } from '@/lib/types';
+import { useState, useCallback } from 'react';
+import { BridgeConnection } from '@/lib/types';
 
 export const useSwitchBridge = () => {
-  const [bridge, setBridge] = useState<BridgeState>({
-    isConnected: false,
-    activeTransfer: false,
-    transferRate: '0 MB/s',
-    deviceName: 'Nintendo Switch (OLED)'
+  const [connection, setConnection] = useState<BridgeConnection>({
+    deviceId: 'NS-0921-X',
+    deviceName: 'Nintendo Switch (OLED)',
+    ipAddress: '192.168.1.15',
+    status: 'disconnected',
+    latency: 0
   });
 
-  const toggleConnection = () => {
-    setBridge(prev => ({
-      ...prev,
-      isConnected: !prev.isConnected,
-      activeTransfer: false
-    }));
-  };
+  const [isScanning, setIsScanning] = useState(false);
 
-  useEffect(() => {
-    let interval: NodeJS.Timeout;
-    if (bridge.isConnected && Math.random() > 0.5) {
-      setBridge(prev => ({ ...prev, activeTransfer: true }));
-      interval = setInterval(() => {
-        const rate = (Math.random() * 50 + 10).toFixed(1);
-        setBridge(prev => ({ ...prev, transferRate: `${rate} MB/s` }));
-      }, 2000);
+  const toggleConnection = useCallback(() => {
+    if (connection.status === 'connected') {
+      setConnection(prev => ({ ...prev, status: 'disconnected', latency: 0 }));
     } else {
-      setBridge(prev => ({ ...prev, activeTransfer: false, transferRate: '0 MB/s' }));
+      setIsScanning(true);
+      // Simulasi handshake bridge
+      setTimeout(() => {
+        setConnection(prev => ({ 
+          ...prev, 
+          status: 'connected', 
+          latency: Math.floor(Math.random() * 40) + 10 
+        }));
+        setIsScanning(false);
+      }, 2000);
     }
-    return () => clearInterval(interval);
-  }, [bridge.isConnected]);
+  }, [connection.status]);
 
-  return { bridge, toggleConnection };
+  return {
+    connection,
+    isScanning,
+    toggleConnection
+  };
 };

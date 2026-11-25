@@ -1,137 +1,165 @@
-'use client';
-
+"use client";
 import React from 'react';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
+import { Header } from '@/components/Header';
+import { Navigation } from '@/components/Navigation';
+import { usePortingEngine } from '@/hooks/usePortingEngine';
+import { useSwitchBridge } from '@/hooks/useSwitchBridge';
+import { cn } from '@/lib/utils';
 import { 
-  Cpu, 
-  Layers, 
+  Play, 
+  CheckCircle2, 
+  Clock, 
+  ChevronRight, 
   Zap, 
-  Smartphone, 
-  ArrowRight, 
-  Github,
-  ShieldCheck,
-  Rocket
+  Smartphone,
+  HardDrive
 } from 'lucide-react';
 
-export default function LandingPage() {
+export default function Dashboard() {
+  const { projects, stats, startPorting } = usePortingEngine();
+  const { connection, toggleConnection, isScanning } = useSwitchBridge();
+
   return (
-    <main className="relative min-h-screen w-full overflow-hidden bg-[#020203]">
-      {/* Background Ornaments */}
-      <div className="absolute top-[-10%] left-[-10%] w-[50%] h-[50%] bg-cyan-500/10 blur-[120px] rounded-full" />
-      <div className="absolute bottom-[-10%] right-[-10%] w-[50%] h-[50%] bg-purple-600/10 blur-[120px] rounded-full" />
+    <main className="min-h-screen bg-[#050506] text-white pb-32 pt-24">
+      <Header />
       
-      <div className="relative z-10 container mx-auto px-6 py-12 lg:py-24">
-        {/* Hero Section */}
-        <div className="flex flex-col items-center text-center space-y-8">
-          <motion.div 
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/5 border border-white/10 backdrop-blur-sm"
-          >
-            <span className="relative flex h-2 w-2">
-              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-cyan-400 opacity-75"></span>
-              <span className="relative inline-flex rounded-full h-2 w-2 bg-cyan-500"></span>
-            </span>
-            <span className="text-xs font-medium tracking-widest uppercase text-cyan-400/80">System Online: v2.0.4</span>
-          </motion.div>
-
-          <motion.h1 
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.1 }}
-            className="text-5xl md:text-7xl lg:text-8xl font-black tracking-tighter text-white"
-          >
-            FUTURE <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-blue-600">MOBILE</span> ARCH
-          </motion.h1>
-
-          <motion.p 
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.2 }}
-            className="max-w-2xl text-slate-400 text-lg md:text-xl leading-relaxed"
-          >
-            Eksperimen porting Next.js ke aplikasi Native Android menggunakan Capacitor dengan arsitektur hybrid modern.
-          </motion.p>
-
-          <motion.div 
-            initial={{ opacity: 0, scale: 0.9 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ delay: 0.3 }}
-            className="flex flex-wrap justify-center gap-4 pt-4"
-          >
-            <button className="cyber-button group">
-              Unduh APK <Rocket className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
-            </button>
-            <button className="flex items-center gap-2 px-8 py-4 rounded-2xl border border-white/10 bg-white/5 font-bold hover:bg-white/10 transition-all">
-              <Github className="w-5 h-5" /> Repository
-            </button>
-          </motion.div>
-        </div>
-
-        {/* Feature Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-32">
-          {[
-            { 
-              icon: <Cpu className="w-8 h-8 text-cyan-400" />, 
-              title: "Engine Porting", 
-              desc: "Optimasi runtime JavaScript untuk performa maksimal di perangkat mobile." 
-            },
-            { 
-              icon: <Layers className="w-8 h-8 text-purple-400" />, 
-              title: "Hybrid Bridge", 
-              desc: "Komunikasi seamless antara lapisan Web dan modul Native Android." 
-            },
-            { 
-              icon: <ShieldCheck className="w-8 h-8 text-emerald-400" />, 
-              title: "Secure Build", 
-              desc: "Automated CI/CD pipeline dengan enkripsi artifact build." 
-            }
-          ].map((feature, i) => (
-            <motion.div
-              key={i}
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              transition={{ delay: i * 0.1 }}
-              viewport={{ once: true }}
-              className="glass-card group hover:border-cyan-500/30 transition-all"
-            >
-              <div className="mb-4 p-3 rounded-xl bg-white/5 w-fit group-hover:scale-110 transition-transform">
-                {feature.icon}
-              </div>
-              <h3 className="text-xl font-bold text-white mb-2">{feature.title}</h3>
-              <p className="text-slate-400 leading-relaxed">{feature.desc}</p>
-            </motion.div>
-          ))}
-        </div>
-
-        {/* Status Section */}
-        <motion.div 
-          initial={{ opacity: 0 }}
-          whileInView={{ opacity: 1 }}
-          className="mt-32 p-8 cyber-panel relative group"
-        >
-          <div className="scanline" />
-          <div className="flex flex-col md:flex-row items-center justify-between gap-8">
-            <div className="space-y-2">
-              <h2 className="text-3xl font-bold text-white">GitHub Action Status</h2>
-              <p className="text-slate-400">Pipeline otomatis sedang mengonfigurasi build Android...</p>
+      <div className="px-6 space-y-8">
+        {/* Connection Status Card */}
+        <section>
+          <div className="bg-gradient-to-br from-indigo-600/20 to-blue-600/5 border border-white/10 rounded-3xl p-6 relative overflow-hidden">
+            <div className="absolute top-0 right-0 p-4 opacity-10">
+              <Zap size={80} />
             </div>
-            <div className="flex gap-8">
-              <div className="text-center">
-                <div className="text-2xl font-mono font-bold text-cyan-400">98%</div>
-                <div className="text-xs uppercase tracking-widest text-slate-500">Success Rate</div>
+            <div className="relative z-10">
+              <div className="flex justify-between items-start mb-6">
+                <div>
+                  <p className="text-indigo-400 text-xs font-bold uppercase tracking-widest mb-1">Bridge Connection</p>
+                  <h2 className="text-2xl font-bold">{connection.deviceName}</h2>
+                  <p className="text-gray-400 text-sm">{connection.ipAddress}</p>
+                </div>
+                <div className={cn(
+                  "px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-tighter",
+                  connection.status === 'connected' ? "bg-green-500/20 text-green-400" : "bg-red-500/20 text-red-400"
+                )}>
+                  {connection.status}
+                </div>
               </div>
-              <div className="text-center">
-                <div className="text-2xl font-mono font-bold text-purple-400">~4m</div>
-                <div className="text-xs uppercase tracking-widest text-slate-500">Build Time</div>
+
+              <div className="flex items-center gap-4 mb-6">
+                <div className="flex-1 bg-white/5 rounded-2xl p-3 border border-white/5">
+                  <p className="text-[10px] text-gray-500 uppercase font-bold mb-1">Latency</p>
+                  <p className="font-mono text-lg">{connection.latency}ms</p>
+                </div>
+                <div className="flex-1 bg-white/5 rounded-2xl p-3 border border-white/5">
+                  <p className="text-[10px] text-gray-500 uppercase font-bold mb-1">Status</p>
+                  <p className="font-mono text-lg truncate">STABLE</p>
+                </div>
               </div>
+
+              <button 
+                onClick={toggleConnection}
+                disabled={isScanning}
+                className={cn(
+                  "w-full py-4 rounded-2xl font-bold transition-all active:scale-[0.98] flex items-center justify-center gap-2",
+                  connection.status === 'connected' 
+                    ? "bg-white/10 text-white hover:bg-white/20" 
+                    : "bg-indigo-600 text-white shadow-lg shadow-indigo-600/30"
+                )}
+              >
+                {isScanning ? (
+                  <span className="flex items-center gap-2">
+                    <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                    Scanning...
+                  </span>
+                ) : (
+                  <>
+                    <Smartphone size={18} />
+                    {connection.status === 'connected' ? 'Disconnect Bridge' : 'Connect Device'}
+                  </>
+                )}
+              </button>
             </div>
           </div>
-        </motion.div>
+        </section>
+
+        {/* Quick Stats */}
+        <section className="grid grid-cols-2 gap-4">
+          <div className="bg-white/5 border border-white/5 p-4 rounded-2xl">
+            <div className="bg-blue-500/20 w-8 h-8 rounded-lg flex items-center justify-center mb-3">
+              <CheckCircle2 size={16} className="text-blue-400" />
+            </div>
+            <p className="text-2xl font-bold">{stats.completed}</p>
+            <p className="text-xs text-gray-500 font-medium">Ported Successfully</p>
+          </div>
+          <div className="bg-white/5 border border-white/5 p-4 rounded-2xl">
+            <div className="bg-amber-500/20 w-8 h-8 rounded-lg flex items-center justify-center mb-3">
+              <Clock size={16} className="text-amber-400" />
+            </div>
+            <p className="text-2xl font-bold">{stats.active}</p>
+            <p className="text-xs text-gray-500 font-medium">In Progress</p>
+          </div>
+        </section>
+
+        {/* Active Projects List */}
+        <section className="space-y-4">
+          <div className="flex justify-between items-center">
+            <h3 className="text-lg font-bold">Active Projects</h3>
+            <button className="text-indigo-400 text-xs font-bold uppercase tracking-wider">View All</button>
+          </div>
+          
+          <div className="space-y-3">
+            <AnimatePresence>
+              {projects.map((project) => (
+                <motion.div
+                  key={project.id}
+                  layout
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  className="bg-white/5 border border-white/5 p-4 rounded-2xl flex items-center gap-4 group"
+                >
+                  <div className={cn(
+                    "w-12 h-12 rounded-xl flex items-center justify-center",
+                    project.status === 'completed' ? "bg-green-500/10 text-green-500" : 
+                    project.status === 'processing' ? "bg-indigo-500/10 text-indigo-500" : "bg-gray-500/10 text-gray-500"
+                  )}>
+                    {project.status === 'completed' ? <CheckCircle2 size={24} /> : <HardDrive size={24} />}
+                  </div>
+                  
+                  <div className="flex-1 min-w-0">
+                    <h4 className="font-bold text-sm truncate">{project.name}</h4>
+                    <div className="flex items-center gap-2 mt-1">
+                      <div className="flex-1 h-1 bg-white/5 rounded-full overflow-hidden">
+                        <motion.div 
+                          className="h-full bg-indigo-500"
+                          initial={{ width: 0 }}
+                          animate={{ width: `${project.progress}%` }}
+                        />
+                      </div>
+                      <span className="text-[10px] font-mono text-gray-500">{Math.round(project.progress)}%</span>
+                    </div>
+                  </div>
+
+                  {project.status === 'idle' && (
+                    <button 
+                      onClick={() => startPorting(project.id)}
+                      className="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center text-white hover:bg-indigo-600 transition-colors"
+                    >
+                      <Play size={16} fill="currentColor" />
+                    </button>
+                  )}
+                  
+                  {project.status === 'completed' && (
+                    <ChevronRight size={20} className="text-gray-600" />
+                  )}
+                </motion.div>
+              ))}
+            </AnimatePresence>
+          </div>
+        </section>
       </div>
 
-      {/* Footer Decoration */}
-      <div className="absolute bottom-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-cyan-500 to-transparent opacity-20" />
+      <Navigation />
     </main>
   );
 }
